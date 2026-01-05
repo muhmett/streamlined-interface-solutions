@@ -13,6 +13,9 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        cairo: ["Cairo", "sans-serif"],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -57,28 +60,42 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        vea: {
+          blue: "hsl(var(--vea-blue))",
+          "blue-light": "hsl(var(--vea-blue-light))",
+          green: "hsl(var(--vea-green))",
+          "green-light": "hsl(var(--vea-green-light))",
+          purple: "hsl(var(--vea-purple))",
+          "purple-light": "hsl(var(--vea-purple-light))",
+          orange: "hsl(var(--vea-orange))",
+          "orange-light": "hsl(var(--vea-orange-light))",
+          gold: "hsl(var(--vea-gold))",
+          "gold-light": "hsl(var(--vea-gold-light))",
+          indigo: "hsl(var(--vea-indigo))",
+          "indigo-light": "hsl(var(--vea-indigo-light))",
+          red: "hsl(var(--vea-red))",
+          "red-light": "hsl(var(--vea-red-light))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        xl: "calc(var(--radius) + 4px)",
+        "2xl": "calc(var(--radius) + 8px)",
+      },
+      boxShadow: {
+        card: "var(--shadow-card)",
+        elevated: "var(--shadow-elevated)",
       },
       keyframes: {
         "accordion-down": {
-          from: {
-            height: "0",
-          },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
-          to: {
-            height: "0",
-          },
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
         },
       },
       animation: {
