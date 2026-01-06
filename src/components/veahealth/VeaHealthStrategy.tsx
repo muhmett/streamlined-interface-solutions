@@ -13,6 +13,10 @@ import TechnicalSection from './sections/TechnicalSection';
 import CompetitionSection from './sections/CompetitionSection';
 import QuickWinsSection from './sections/QuickWinsSection';
 import KPIsSection from './sections/KPIsSection';
+import MediaBuyingSection from './sections/MediaBuyingSection';
+import HairImplantSection from './sections/HairImplantSection';
+import TrafficGrowthSection from './sections/TrafficGrowthSection';
+import BudgetDashboardSection from './sections/BudgetDashboardSection';
 
 const VeaHealthStrategy = () => {
   const [activeMarket, setActiveMarket] = useState('uk');
@@ -60,6 +64,10 @@ const VeaHealthStrategy = () => {
         />
 
         {activeSection === 'overview' && <OverviewSection activeMarket={activeMarket} progress={progress} />}
+        {activeSection === 'budget' && <BudgetDashboardSection />}
+        {activeSection === 'traffic' && <TrafficGrowthSection />}
+        {activeSection === 'mediabuy' && <MediaBuyingSection />}
+        {activeSection === 'hairimplant' && <HairImplantSection />}
         {activeSection === 'keywords' && <KeywordsSection activeMarket={activeMarket} />}
         {activeSection === 'crowninfo' && <CrownInfoSection />}
         {activeSection === 'content' && <ContentSection />}
