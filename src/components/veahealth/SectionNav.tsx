@@ -1,7 +1,7 @@
 import React from 'react';
 import { 
   Target, Search, FileText, Calendar, Settings, 
-  Activity, Zap, BarChart3 
+  Activity, Zap, BarChart3, DollarSign, Sparkles, TrendingUp, PieChart
 } from 'lucide-react';
 import { allKeywords, contentPillars, technicalSEO, quickWins, dentalCrownInfo, getColorClasses, ColorType } from '@/data/veahealth-data';
 
@@ -17,8 +17,12 @@ const SectionNav = ({ activeSection, setActiveSection, activeMarket, currentMark
   
   const sections = [
     { id: 'overview', label: 'نظرة عامة', icon: <Target />, count: null },
+    { id: 'budget', label: 'الميزانية', icon: <PieChart />, count: null },
+    { id: 'traffic', label: 'النمو والزيارات', icon: <TrendingUp />, count: null },
+    { id: 'mediabuy', label: 'Meta Ads', icon: <DollarSign />, count: 3 },
+    { id: 'hairimplant', label: 'زراعة الشعر', icon: <Sparkles />, count: 4 },
     { id: 'keywords', label: 'كلمات مفتاحية', icon: <Search />, count: allKeywords[activeMarket]?.length || 0 },
-    { id: 'crowninfo', label: 'معلومات تيجان', icon: <Target />, count: dentalCrownInfo.types.length },
+    { id: 'crowninfo', label: 'تيجان الأسنان', icon: <Target />, count: dentalCrownInfo.types.length },
     { id: 'content', label: 'محتوى', icon: <FileText />, count: contentPillars.length },
     { id: 'implementation', label: 'خطة 12 شهر', icon: <Calendar />, count: 5 },
     { id: 'technical', label: 'SEO تقني', icon: <Settings />, count: technicalSEO.length },
