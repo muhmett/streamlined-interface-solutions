@@ -41,6 +41,46 @@ export interface Review {
 
 export type VerificationStatus = "none" | "pending" | "approved" | "rejected";
 
+export type JobStatus = "requested" | "accepted" | "completed" | "cancelled";
+
+/** A service engagement between a client and an artisan (ليسطوريك). */
+export interface Job {
+  id: string;
+  artisanId: string;
+  artisanUserId: string | null;
+  artisanName: string;
+  artisanPhone: string;
+  clientId: string;
+  clientName: string;
+  clientPhone: string;
+  description: string;
+  status: JobStatus;
+  createdAt: string;
+  completedAt: string | null;
+}
+
+/** An urgent problem published by a client (مشكل عاجل). */
+export interface UrgentRequest {
+  id: string;
+  clientId: string;
+  clientName: string;
+  clientPhone: string;
+  category: CategoryId;
+  description: string;
+  city: string;
+  status: "open" | "solved";
+  createdAt: string;
+}
+
+/** A work photo the artisan posts on his profile (بحال انسطا). */
+export interface PortfolioPost {
+  id: string;
+  artisanId: string;
+  imageUrl: string;
+  caption: string;
+  createdAt: string;
+}
+
 export interface SearchFilters {
   query: string;
   category: CategoryId | null;

@@ -7,15 +7,19 @@ import type { Artisan } from "@/types";
 import type { LatLng } from "@/lib/geo";
 import { bearingDeg } from "@/lib/geo";
 import { categoryById } from "@/data/categories";
+import { CITIES } from "@/data/cities";
 import { Button } from "@/components/ui/button";
 import { EASE } from "./PageTransition";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface ProximityMapProps {
   artisans: Artisan[];
   userPos: LatLng | null;
   geoStatus: "idle" | "locating" | "granted" | "denied";
   onRequestLocation: () => void;
+  /** Manual fallback when the browser blocks geolocation. */
+  onPickCity: (pos: LatLng) => void;
 }
 
 /**
@@ -24,27 +28,48 @@ interface ProximityMapProps {
  * Fully self-contained SVG — no tile server or API key needed. Tapping a
  * marker opens a mini card; the expand button opens a fullscreen version.
  */
-export function ProximityMap({ artisans, userPos, geoStatus, onRequestLocation }: ProximityMapProps) {
+export function ProximityMap({ artisans, userPos, geoStatus, onRequestLocation, onPickCity }: ProximityMapProps) {
   const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const [selected, setSelected] = useState<Artisan | null>(null);
 
-  // Ask for the geolocation permission before the map can render.
+  // Ask for the geolocation permission before the map can render —
+  // with a manual city picker for browsers that block it.
   if (!userPos) {
     return (
-      <div className="flex items-center gap-4 rounded-2xl border border-dashed border-primary/40 bg-brand-emerald-soft/60 p-4">
-        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-          <LocateFixed className={cn("h-5 w-5", geoStatus === "locating" && "animate-spin")} />
+      <div className="space-y-4 rounded-2xl border border-dashed border-secondary/60 bg-brand-gold-soft/60 p-4">
+        <div className="flex items-center gap-4">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+            <LocateFixed className={cn("h-5 w-5", geoStatus === "locating" && "animate-spin")} />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-extrabold">{t("map.needLocation")}</p>
+            {geoStatus === "denied" && (
+              <p className="mt-0.5 text-xs text-muted-foreground">{t("search.locationDenied")}</p>
+            )}
+          </div>
+          <Button size="sm" className="rounded-xl font-black" disabled={geoStatus === "locating"} onClick={onRequestLocation}>
+            {t("map.enable")}
+          </Button>
         </div>
-        <div className="min-w-0 flex-1">
-          <p className="text-sm font-extrabold">{t("map.needLocation")}</p>
-          {geoStatus === "denied" && (
-            <p className="mt-0.5 text-xs text-muted-foreground">{t("search.locationDenied")}</p>
-          )}
+        <div>
+          <p className="mb-2 text-xs font-bold text-muted-foreground">{t("cities.pick")}</p>
+          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+            {CITIES.map((city) => (
+              <motion.button
+                key={city.name}
+                whileTap={{ scale: 0.92 }}
+                onClick={() => {
+                  onPickCity({ lat: city.lat, lng: city.lng });
+                  toast.success(t("cities.picked", { city: city.name }));
+                }}
+                className="shrink-0 rounded-full bg-card px-3.5 py-1.5 text-sm font-bold shadow-card ring-1 ring-border/60 hover:ring-secondary"
+              >
+                {city.name}
+              </motion.button>
+            ))}
+          </div>
         </div>
-        <Button size="sm" className="rounded-xl font-black" disabled={geoStatus === "locating"} onClick={onRequestLocation}>
-          {t("map.enable")}
-        </Button>
       </div>
     );
   }
@@ -167,7 +192,7 @@ function RadarSvg({
           <circle
             r={ring.r}
             fill="none"
-            stroke="hsl(40 40% 97% / 0.22)"
+            stroke="hsl(0 0% 100% / 0.22)"
             strokeWidth="0.8"
             strokeDasharray="2.5 3"
           />
@@ -175,7 +200,7 @@ function RadarSvg({
             <text
               x="2"
               y={-ring.r + 5.5}
-              fill="hsl(40 40% 97% / 0.55)"
+              fill="hsl(0 0% 100% / 0.55)"
               fontSize="5.5"
               fontWeight="700"
               direction="rtl"
@@ -189,13 +214,13 @@ function RadarSvg({
       {/* user at the center */}
       <motion.circle
         r="7"
-        fill="hsl(43 72% 58% / 0.35)"
+        fill="hsl(45 96% 55% / 0.35)"
         animate={{ r: [7, 13, 7], opacity: [0.6, 0.15, 0.6] }}
         transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
       />
-      <circle r="3.6" fill="hsl(43 72% 58%)" stroke="hsl(40 40% 97%)" strokeWidth="1.2" />
+      <circle r="3.6" fill="hsl(45 96% 52%)" stroke="hsl(0 0% 100%)" strokeWidth="1.2" />
       {showRingLabels && (
-        <text y="18" textAnchor="middle" fill="hsl(40 40% 97% / 0.85)" fontSize="6" fontWeight="800">
+        <text y="18" textAnchor="middle" fill="hsl(0 0% 100% / 0.85)" fontSize="6" fontWeight="800">
           {t("map.youAreHere")} 📍
         </text>
       )}
@@ -217,8 +242,8 @@ function RadarSvg({
               cx={x}
               cy={y}
               r={isSelected ? 12 : 9.5}
-              fill="hsl(40 33% 97%)"
-              stroke={artisan.isVerified ? "hsl(43 72% 55%)" : "hsl(168 30% 55%)"}
+              fill="hsl(0 0% 100%)"
+              stroke={artisan.isVerified ? "hsl(45 96% 50%)" : "hsl(0 0% 55%)"}
               strokeWidth={isSelected ? 2.2 : 1.4}
             />
             <Icon
@@ -226,7 +251,7 @@ function RadarSvg({
               y={y - (isSelected ? 6.5 : 5)}
               width={isSelected ? 13 : 10}
               height={isSelected ? 13 : 10}
-              color="hsl(168 55% 21%)"
+              color="hsl(0 0% 10%)"
               strokeWidth={2.4}
             />
           </motion.g>

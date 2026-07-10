@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
-import { ArrowRight, Briefcase, Clock, MapPin, MessageCircle, Phone, Star } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { ArrowRight, Briefcase, Clock, MapPin, Phone, Star, Wrench, X } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
@@ -9,11 +9,14 @@ import { PageTransition, EASE, staggerContainer, staggerItem } from "@/component
 import { VerifiedBadge } from "@/components/m3allem/VerifiedBadge";
 import { StarRating } from "@/components/m3allem/StarRating";
 import { ReviewModal } from "@/components/m3allem/ReviewModal";
+import { ContactSheet } from "@/components/m3allem/ContactSheet";
+import { PortfolioGrid } from "@/components/m3allem/PortfolioGrid";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { fetchArtisan, fetchReviews } from "@/lib/api";
+import { createJob, fetchArtisan, fetchPortfolio, fetchReviews } from "@/lib/api";
 import { categoryById } from "@/data/categories";
 import { useAuth } from "@/contexts/AuthContext";
+import type { Artisan } from "@/types";
 
 export default function ArtisanProfile() {
   const { id = "" } = useParams();
@@ -22,6 +25,8 @@ export default function ArtisanProfile() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const [reviewOpen, setReviewOpen] = useState(false);
+  const [contactOpen, setContactOpen] = useState(false);
+  const [requestOpen, setRequestOpen] = useState(false);
 
   const { data: artisan, isLoading } = useQuery({
     queryKey: ["artisan", id],
@@ -30,6 +35,11 @@ export default function ArtisanProfile() {
   const { data: reviews } = useQuery({
     queryKey: ["reviews", id],
     queryFn: () => fetchReviews(id),
+    enabled: Boolean(id),
+  });
+  const { data: portfolio } = useQuery({
+    queryKey: ["portfolio", id],
+    queryFn: () => fetchPortfolio(id),
     enabled: Boolean(id),
   });
 
@@ -118,17 +128,32 @@ export default function ArtisanProfile() {
         </motion.div>
 
         {/* Bio */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15, duration: 0.4, ease: EASE }}
-          className="mt-6"
-        >
-          <h2 className="mb-2 text-lg font-black">{t("artisan.about")}</h2>
-          <p className="rounded-2xl bg-card p-4 leading-relaxed text-muted-foreground shadow-card ring-1 ring-border/60">
-            {artisan.bio}
-          </p>
-        </motion.section>
+        {artisan.bio && (
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15, duration: 0.4, ease: EASE }}
+            className="mt-6"
+          >
+            <h2 className="mb-2 text-lg font-black">{t("artisan.about")}</h2>
+            <p className="rounded-2xl bg-card p-4 leading-relaxed text-muted-foreground shadow-card ring-1 ring-border/60">
+              {artisan.bio}
+            </p>
+          </motion.section>
+        )}
+
+        {/* Portfolio — الشغل ديالو بحال انسطا */}
+        {portfolio && portfolio.length > 0 && (
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.4, ease: EASE }}
+            className="mt-6"
+          >
+            <h2 className="mb-3 text-lg font-black">{t("portfolio.gridTitle")}</h2>
+            <PortfolioGrid posts={portfolio} />
+          </motion.section>
+        )}
 
         {/* Reviews */}
         <section className="mt-6">
@@ -180,20 +205,27 @@ export default function ArtisanProfile() {
         className="fixed inset-x-0 bottom-0 z-40 border-t border-border/60 bg-card/90 pb-safe backdrop-blur-xl"
       >
         <div className="mx-auto flex max-w-lg gap-3 px-5 py-3">
-          <Button asChild variant="outline" className="h-12 flex-1 gap-2 rounded-2xl font-black">
-            <a href={`tel:${artisan.phone}`}>
-              <Phone className="h-5 w-5" />
-              {t("artisan.call")}
-            </a>
+          <Button
+            variant="outline"
+            className="h-12 flex-1 gap-2 rounded-2xl font-black"
+            onClick={() => setContactOpen(true)}
+          >
+            <Phone className="h-5 w-5" />
+            {t("artisan.call")}
           </Button>
           <Button
-            asChild
-            className="h-12 flex-1 gap-2 rounded-2xl bg-[#25D366] font-black text-white hover:bg-[#1fb457]"
+            className="h-12 flex-[1.4] gap-2 rounded-2xl bg-gold-gradient font-black text-primary shadow-gold hover:opacity-90"
+            onClick={() => {
+              if (!user) {
+                toast.info(t("jobs.mustLogin"));
+                navigate("/login");
+                return;
+              }
+              setRequestOpen(true);
+            }}
           >
-            <a href={`https://wa.me/${artisan.phone.replace("+", "")}`} target="_blank" rel="noreferrer">
-              <MessageCircle className="h-5 w-5" />
-              {t("artisan.whatsapp")}
-            </a>
+            <Wrench className="h-5 w-5" />
+            {t("jobs.requestService")}
           </Button>
         </div>
       </motion.div>
@@ -204,7 +236,101 @@ export default function ArtisanProfile() {
         onClose={() => setReviewOpen(false)}
         onSubmitted={() => queryClient.invalidateQueries({ queryKey: ["reviews", id] })}
       />
+      <ContactSheet name={artisan.name} phone={artisan.phone} open={contactOpen} onClose={() => setContactOpen(false)} />
+      <RequestJobSheet artisan={artisan} open={requestOpen} onClose={() => setRequestOpen(false)} />
     </PageTransition>
+  );
+}
+
+/** Bottom-sheet that files a service request → shows up in both histories. */
+function RequestJobSheet({ artisan, open, onClose }: { artisan: Artisan; open: boolean; onClose: () => void }) {
+  const { t } = useTranslation();
+  const { user, displayName } = useAuth();
+  const queryClient = useQueryClient();
+  const [description, setDescription] = useState("");
+  const [phone, setPhone] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  const send = async () => {
+    if (!user) return;
+    setBusy(true);
+    try {
+      await createJob({
+        artisan,
+        clientId: user.id,
+        clientName: displayName ?? t("profile.guest"),
+        clientPhone: phone.trim(),
+        description: description.trim(),
+      });
+      toast.success(t("jobs.requestSent"));
+      queryClient.invalidateQueries({ queryKey: ["jobs", user.id] });
+      setDescription("");
+      onClose();
+    } catch {
+      toast.error(t("common.error"));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <AnimatePresence>
+      {open && (
+        <>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+            className="fixed inset-0 z-50 bg-foreground/50 backdrop-blur-sm"
+          />
+          <motion.div
+            role="dialog"
+            aria-modal="true"
+            initial={{ y: "100%" }}
+            animate={{ y: 0 }}
+            exit={{ y: "100%" }}
+            transition={{ duration: 0.4, ease: EASE }}
+            className="fixed inset-x-0 bottom-0 z-50 mx-auto max-w-lg rounded-t-3xl bg-card p-6 pb-safe shadow-elevated"
+          >
+            <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-muted" />
+            <div className="flex items-start justify-between">
+              <h2 className="text-xl font-black">{t("jobs.requestTitle", { name: artisan.name })}</h2>
+              <button onClick={onClose} aria-label={t("common.close")} className="rounded-full p-1 text-muted-foreground hover:bg-muted">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <p className="mb-2 mt-5 text-sm font-bold text-muted-foreground">{t("jobs.requestDescLabel")}</p>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder={t("jobs.requestDescPlaceholder")}
+              rows={3}
+              className="w-full resize-none rounded-2xl border border-border bg-background p-3 outline-none focus:ring-2 focus:ring-secondary/60"
+            />
+
+            <p className="mb-2 mt-3 text-sm font-bold text-muted-foreground">{t("auth.phoneLabel")}</p>
+            <input
+              dir="ltr"
+              inputMode="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value.replace(/[^\d+]/g, ""))}
+              placeholder="+2126XXXXXXXX"
+              className="w-full rounded-2xl border border-border bg-background p-3 font-bold tracking-wider outline-none focus:ring-2 focus:ring-secondary/60"
+            />
+
+            <Button
+              onClick={send}
+              disabled={busy}
+              className="mt-5 h-13 w-full rounded-2xl bg-gold-gradient py-4 text-base font-black text-primary shadow-gold hover:opacity-90"
+            >
+              {busy ? t("common.loading") : t("jobs.sendRequest")}
+            </Button>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
   );
 }
 

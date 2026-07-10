@@ -1,6 +1,14 @@
 import { supabase } from "@/lib/supabase";
 import { DEMO_ARTISANS, DEMO_REVIEWS } from "@/data/demo-artisans";
-import type { Artisan, Review, VerificationStatus } from "@/types";
+import type {
+  Artisan,
+  Job,
+  JobStatus,
+  PortfolioPost,
+  Review,
+  UrgentRequest,
+  VerificationStatus,
+} from "@/types";
 
 /**
  * Data-access layer. Every function transparently falls back to the in-memory
@@ -199,7 +207,277 @@ export async function saveMyListing(userId: string, input: MyListingInput): Prom
   if (error) throw error;
 }
 
+/* ---------- jobs: the service history (ليسطوريك ديال الخدمات) ---------- */
+
+const JOBS_KEY = "m3allem.jobs";
+
+function readLocal<T>(key: string): T[] {
+  try {
+    return JSON.parse(localStorage.getItem(key) ?? "[]") as T[];
+  } catch {
+    return [];
+  }
+}
+const writeLocal = (key: string, value: unknown) => localStorage.setItem(key, JSON.stringify(value));
+
+/** Jobs where the user is the client OR the artisan. */
+export async function fetchMyJobs(userId: string): Promise<Job[]> {
+  if (!supabase) {
+    const myListingId = readLocalListing()?.id;
+    return readLocal<Job>(JOBS_KEY)
+      .filter((j) => j.clientId === userId || (myListingId && j.artisanId === myListingId))
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  }
+  const { data, error } = await supabase
+    .from("jobs")
+    .select("*")
+    .or(`client_id.eq.${userId},artisan_user_id.eq.${userId}`)
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return (data ?? []).map(mapJobRow);
+}
+
+export async function createJob(input: {
+  artisan: Artisan;
+  clientId: string;
+  clientName: string;
+  clientPhone: string;
+  description: string;
+}): Promise<void> {
+  if (!supabase) {
+    const jobs = readLocal<Job>(JOBS_KEY);
+    jobs.unshift({
+      id: `job-${Date.now()}`,
+      artisanId: input.artisan.id,
+      artisanUserId: null,
+      artisanName: input.artisan.name,
+      artisanPhone: input.artisan.phone,
+      clientId: input.clientId,
+      clientName: input.clientName,
+      clientPhone: input.clientPhone,
+      description: input.description,
+      status: "requested",
+      createdAt: new Date().toISOString(),
+      completedAt: null,
+    });
+    writeLocal(JOBS_KEY, jobs);
+    return;
+  }
+  const { error } = await supabase.from("jobs").insert({
+    artisan_id: input.artisan.id,
+    artisan_name: input.artisan.name,
+    artisan_phone: input.artisan.phone,
+    client_id: input.clientId,
+    client_name: input.clientName,
+    client_phone: input.clientPhone,
+    description: input.description,
+    status: "requested",
+  });
+  if (error) throw error;
+}
+
+export async function updateJobStatus(jobId: string, status: JobStatus): Promise<void> {
+  const completedAt = status === "completed" ? new Date().toISOString() : null;
+  if (!supabase) {
+    const jobs = readLocal<Job>(JOBS_KEY).map((j) =>
+      j.id === jobId ? { ...j, status, completedAt: completedAt ?? j.completedAt } : j,
+    );
+    writeLocal(JOBS_KEY, jobs);
+    return;
+  }
+  const { error } = await supabase
+    .from("jobs")
+    .update({ status, ...(completedAt ? { completed_at: completedAt } : {}) })
+    .eq("id", jobId);
+  if (error) throw error;
+}
+
+/* ---------- urgent requests (المشاكل العاجلة) ---------- */
+
+const URGENT_KEY = "m3allem.urgent";
+
+export async function fetchUrgentRequests(): Promise<UrgentRequest[]> {
+  if (!supabase) {
+    return readLocal<UrgentRequest>(URGENT_KEY).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  }
+  const { data, error } = await supabase
+    .from("urgent_requests")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(100);
+  if (error) throw error;
+  return (data ?? []).map(mapUrgentRow);
+}
+
+export async function createUrgentRequest(input: {
+  clientId: string;
+  clientName: string;
+  clientPhone: string;
+  category: UrgentRequest["category"];
+  description: string;
+  city: string;
+}): Promise<void> {
+  if (!supabase) {
+    const posts = readLocal<UrgentRequest>(URGENT_KEY);
+    posts.unshift({
+      id: `urg-${Date.now()}`,
+      ...input,
+      status: "open",
+      createdAt: new Date().toISOString(),
+    });
+    writeLocal(URGENT_KEY, posts);
+    return;
+  }
+  const { error } = await supabase.from("urgent_requests").insert({
+    client_id: input.clientId,
+    client_name: input.clientName,
+    client_phone: input.clientPhone,
+    category: input.category,
+    description: input.description,
+    city: input.city,
+    status: "open",
+  });
+  if (error) throw error;
+}
+
+export async function markUrgentSolved(id: string): Promise<void> {
+  if (!supabase) {
+    writeLocal(
+      URGENT_KEY,
+      readLocal<UrgentRequest>(URGENT_KEY).map((u) => (u.id === id ? { ...u, status: "solved" as const } : u)),
+    );
+    return;
+  }
+  const { error } = await supabase.from("urgent_requests").update({ status: "solved" }).eq("id", id);
+  if (error) throw error;
+}
+
+/* ---------- portfolio (بوسطات المعلّم بحال انسطا) ---------- */
+
+const PORTFOLIO_KEY = "m3allem.portfolio";
+
+export async function fetchPortfolio(artisanId: string): Promise<PortfolioPost[]> {
+  if (!supabase) {
+    return readLocal<PortfolioPost>(PORTFOLIO_KEY)
+      .filter((p) => p.artisanId === artisanId)
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  }
+  const { data, error } = await supabase
+    .from("portfolio_posts")
+    .select("*")
+    .eq("artisan_id", artisanId)
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return (data ?? []).map(mapPortfolioRow);
+}
+
+export async function addPortfolioPost(artisanId: string, file: File, caption: string): Promise<void> {
+  const imageUrl = await compressImage(file);
+  if (!supabase) {
+    const posts = readLocal<PortfolioPost>(PORTFOLIO_KEY);
+    posts.unshift({
+      id: `post-${Date.now()}`,
+      artisanId,
+      imageUrl,
+      caption,
+      createdAt: new Date().toISOString(),
+    });
+    writeLocal(PORTFOLIO_KEY, posts);
+    return;
+  }
+  // Upload the compressed image to the public portfolio bucket.
+  const blob = await (await fetch(imageUrl)).blob();
+  const path = `${artisanId}/${Date.now()}.jpg`;
+  const { error: upErr } = await supabase.storage.from("portfolio").upload(path, blob, {
+    contentType: "image/jpeg",
+  });
+  if (upErr) throw upErr;
+  const { data: pub } = supabase.storage.from("portfolio").getPublicUrl(path);
+  const { error } = await supabase.from("portfolio_posts").insert({
+    artisan_id: artisanId,
+    image_url: pub.publicUrl,
+    caption,
+  });
+  if (error) throw error;
+}
+
+export async function deletePortfolioPost(id: string): Promise<void> {
+  if (!supabase) {
+    writeLocal(
+      PORTFOLIO_KEY,
+      readLocal<PortfolioPost>(PORTFOLIO_KEY).filter((p) => p.id !== id),
+    );
+    return;
+  }
+  const { error } = await supabase.from("portfolio_posts").delete().eq("id", id);
+  if (error) throw error;
+}
+
+/** Downscale to ≤720px JPEG data-URL — small enough for demo localStorage. */
+function compressImage(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const max = 720;
+      const ratio = Math.min(1, max / Math.max(img.width, img.height));
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.round(img.width * ratio);
+      canvas.height = Math.round(img.height * ratio);
+      canvas.getContext("2d")!.drawImage(img, 0, 0, canvas.width, canvas.height);
+      resolve(canvas.toDataURL("image/jpeg", 0.72));
+    };
+    img.onerror = reject;
+    img.src = url;
+  });
+}
+
 /* ---------- row mappers (snake_case DB → camelCase app) ---------- */
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mapJobRow(row: any): Job {
+  return {
+    id: row.id,
+    artisanId: row.artisan_id,
+    artisanUserId: row.artisan_user_id ?? null,
+    artisanName: row.artisan_name ?? "",
+    artisanPhone: row.artisan_phone ?? "",
+    clientId: row.client_id,
+    clientName: row.client_name ?? "",
+    clientPhone: row.client_phone ?? "",
+    description: row.description ?? "",
+    status: row.status,
+    createdAt: row.created_at,
+    completedAt: row.completed_at ?? null,
+  };
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mapUrgentRow(row: any): UrgentRequest {
+  return {
+    id: row.id,
+    clientId: row.client_id,
+    clientName: row.client_name ?? "",
+    clientPhone: row.client_phone ?? "",
+    category: row.category,
+    description: row.description ?? "",
+    city: row.city ?? "",
+    status: row.status,
+    createdAt: row.created_at,
+  };
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mapPortfolioRow(row: any): PortfolioPost {
+  return {
+    id: row.id,
+    artisanId: row.artisan_id,
+    imageUrl: row.image_url,
+    caption: row.caption ?? "",
+    createdAt: row.created_at,
+  };
+}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function mapArtisanRow(row: any): Artisan {

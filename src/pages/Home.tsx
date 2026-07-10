@@ -27,7 +27,7 @@ const DEFAULT_FILTERS: SearchFilters = {
 export default function Home() {
   const { t } = useTranslation();
   const { displayName } = useAuth();
-  const { position, status: geoStatus, locate } = useGeolocation();
+  const { position, status: geoStatus, locate, setManual } = useGeolocation();
   const [filters, setFilters] = useState<SearchFilters>(DEFAULT_FILTERS);
 
   const { data: artisans, isLoading } = useQuery({
@@ -131,6 +131,7 @@ export default function Home() {
             userPos={position}
             geoStatus={geoStatus}
             onRequestLocation={locate}
+            onPickCity={setManual}
           />
         </section>
 

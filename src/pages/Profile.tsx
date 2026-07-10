@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { BadgeCheck, ChevronLeft, HardHat, HelpCircle, Info, LogOut, Star, User } from "lucide-react";
+import { BadgeCheck, Camera, ChevronLeft, HardHat, HelpCircle, Info, LogOut, Star, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
@@ -36,6 +36,15 @@ export default function Profile() {
       label: role === "artisan" ? t("setup.editTitle") : t("profile.becomeArtisan"),
       onClick: () => navigate("/artisan-setup"),
     },
+    ...(role === "artisan"
+      ? [
+          {
+            icon: Camera,
+            label: t("portfolio.title"),
+            onClick: () => navigate("/my-portfolio"),
+          },
+        ]
+      : []),
     {
       icon: BadgeCheck,
       label: t("profile.verification"),

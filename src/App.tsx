@@ -10,6 +10,9 @@ import RoleSelect from "./pages/RoleSelect";
 import ArtisanSetup from "./pages/ArtisanSetup";
 import Home from "./pages/Home";
 import ArtisanProfile from "./pages/ArtisanProfile";
+import Jobs from "./pages/Jobs";
+import Urgent from "./pages/Urgent";
+import MyPortfolio from "./pages/MyPortfolio";
 import Profile from "./pages/Profile";
 import Verification from "./pages/Verification";
 import NotFound from "./pages/NotFound";
@@ -48,6 +51,23 @@ function AnimatedRoutes() {
         />
         <Route path="/home" element={<Home />} />
         <Route path="/search" element={<Home />} />
+        <Route path="/urgent" element={<Urgent />} />
+        <Route
+          path="/jobs"
+          element={
+            <ProtectedRoute>
+              <Jobs />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/my-portfolio"
+          element={
+            <ProtectedRoute>
+              <MyPortfolio />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/artisan/:id" element={<ArtisanProfile />} />
         <Route path="/profile" element={<Profile />} />
         <Route

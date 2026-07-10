@@ -27,5 +27,11 @@ export function useGeolocation() {
     );
   }, []);
 
-  return { position, status, locate };
+  /** Manual fallback (city picker) when the browser blocks geolocation. */
+  const setManual = useCallback((pos: LatLng) => {
+    setPosition(pos);
+    setStatus("granted");
+  }, []);
+
+  return { position, status, locate, setManual };
 }

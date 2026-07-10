@@ -186,7 +186,7 @@ export function ParticleField({ className }: { className?: string }) {
       for (const p of particles) {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `hsla(43, 72%, 62%, ${p.alpha})`;
+        ctx.fillStyle = `hsla(45, 96%, 55%, ${p.alpha})`;
         ctx.fill();
       }
     };

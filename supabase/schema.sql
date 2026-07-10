@@ -173,6 +173,132 @@ create policy "users read their own id documents"
   on storage.objects for select
   using (bucket_id = 'id-documents' and (storage.foldername(name))[1] = auth.uid()::text);
 
+-- ---------- jobs: service history (ليسطوريك ديال الخدمات) ----------
+create table if not exists public.jobs (
+  id uuid primary key default gen_random_uuid(),
+  artisan_id uuid not null references public.artisans (id) on delete cascade,
+  -- Denormalised so history survives listing edits and RLS stays simple.
+  artisan_user_id uuid references auth.users (id) on delete set null,
+  artisan_name text not null default '',
+  artisan_phone text not null default '',
+  client_id uuid not null references auth.users (id) on delete cascade,
+  client_name text not null default '',
+  client_phone text not null default '',
+  description text not null default '',
+  status text not null default 'requested' check (status in ('requested','accepted','completed','cancelled')),
+  created_at timestamptz not null default now(),
+  completed_at timestamptz
+);
+
+alter table public.jobs enable row level security;
+
+create policy "participants read their jobs"
+  on public.jobs for select
+  using (auth.uid() = client_id or auth.uid() = artisan_user_id);
+
+create policy "clients create job requests"
+  on public.jobs for insert
+  with check (auth.uid() = client_id);
+
+create policy "participants update their jobs"
+  on public.jobs for update
+  using (auth.uid() = client_id or auth.uid() = artisan_user_id);
+
+-- Fill artisan_user_id from the listing on insert.
+create or replace function public.set_job_artisan_user()
+returns trigger
+language plpgsql security definer set search_path = public as $$
+begin
+  select a.user_id, a.name, a.phone
+    into new.artisan_user_id, new.artisan_name, new.artisan_phone
+  from public.artisans a where a.id = new.artisan_id;
+  return new;
+end;
+$$;
+
+drop trigger if exists on_job_created on public.jobs;
+create trigger on_job_created
+  before insert on public.jobs
+  for each row execute function public.set_job_artisan_user();
+
+-- Completed jobs bump the artisan's jobs_done counter.
+create or replace function public.bump_jobs_done()
+returns trigger
+language plpgsql security definer set search_path = public as $$
+begin
+  if new.status = 'completed' and old.status is distinct from 'completed' then
+    update public.artisans set jobs_done = jobs_done + 1 where id = new.artisan_id;
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists on_job_completed on public.jobs;
+create trigger on_job_completed
+  before update on public.jobs
+  for each row execute function public.bump_jobs_done();
+
+-- ---------- urgent requests (المشاكل العاجلة) ----------
+create table if not exists public.urgent_requests (
+  id uuid primary key default gen_random_uuid(),
+  client_id uuid not null references auth.users (id) on delete cascade,
+  client_name text not null default '',
+  client_phone text not null default '',
+  category text not null check (category in (
+    'plumbing','electricity','carpentry','painting','masonry',
+    'ac','cleaning','gardening','welding','locksmith'
+  )),
+  description text not null,
+  city text not null default '',
+  status text not null default 'open' check (status in ('open','solved')),
+  created_at timestamptz not null default now()
+);
+
+alter table public.urgent_requests enable row level security;
+
+create policy "urgent requests are readable by everyone"
+  on public.urgent_requests for select using (true);
+
+create policy "clients publish their own urgent requests"
+  on public.urgent_requests for insert
+  with check (auth.uid() = client_id);
+
+create policy "clients close their own urgent requests"
+  on public.urgent_requests for update
+  using (auth.uid() = client_id);
+
+-- ---------- portfolio posts (بوسطات المعلّم بحال انسطا) ----------
+create table if not exists public.portfolio_posts (
+  id uuid primary key default gen_random_uuid(),
+  artisan_id uuid not null references public.artisans (id) on delete cascade,
+  image_url text not null,
+  caption text not null default '',
+  created_at timestamptz not null default now()
+);
+
+alter table public.portfolio_posts enable row level security;
+
+create policy "portfolio is readable by everyone"
+  on public.portfolio_posts for select using (true);
+
+create policy "artisans manage their own posts"
+  on public.portfolio_posts for all
+  using (exists (select 1 from public.artisans a where a.id = artisan_id and a.user_id = auth.uid()))
+  with check (exists (select 1 from public.artisans a where a.id = artisan_id and a.user_id = auth.uid()));
+
+-- Public bucket for work photos.
+insert into storage.buckets (id, name, public)
+values ('portfolio', 'portfolio', true)
+on conflict (id) do nothing;
+
+create policy "artisans upload portfolio photos"
+  on storage.objects for insert
+  with check (bucket_id = 'portfolio' and auth.role() = 'authenticated');
+
+create policy "portfolio photos are public"
+  on storage.objects for select
+  using (bucket_id = 'portfolio');
+
 -- ---------- nearby search RPC (server-side distance filter) ----------
 -- The client can also filter with the haversine util; this RPC is for
 -- large datasets where filtering must happen in the database.

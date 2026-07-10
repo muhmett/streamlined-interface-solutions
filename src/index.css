@@ -6,58 +6,58 @@
 
 /*
  * M3allem — المعلّم — Design System
- * Luxury, trust-based Moroccan palette: deep zellige emerald, warm brass,
- * ivory backgrounds. All colors are HSL triplets consumed by Tailwind
- * through hsl(var(--token)).
+ * "Taxi" palette: vivid yellow accent + white ground + rich black hero
+ * surfaces. All colors are HSL triplets consumed by Tailwind via
+ * hsl(var(--token)).
  */
 
 @layer base {
   :root {
-    --background: 40 33% 97%;
-    --foreground: 170 30% 12%;
+    --background: 0 0% 100%;
+    --foreground: 0 0% 9%;
 
     --card: 0 0% 100%;
-    --card-foreground: 170 30% 12%;
+    --card-foreground: 0 0% 9%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 170 30% 12%;
+    --popover-foreground: 0 0% 9%;
 
-    /* Deep zellige emerald */
-    --primary: 168 55% 21%;
-    --primary-foreground: 40 40% 97%;
+    /* Rich black — buttons, links, icons */
+    --primary: 0 0% 10%;
+    --primary-foreground: 0 0% 100%;
 
-    /* Warm brass / gold */
-    --secondary: 38 60% 50%;
-    --secondary-foreground: 170 30% 12%;
+    /* Signal yellow */
+    --secondary: 45 96% 50%;
+    --secondary-foreground: 0 0% 9%;
 
-    --muted: 40 25% 93%;
-    --muted-foreground: 170 12% 42%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 42%;
 
-    --accent: 38 60% 50%;
-    --accent-foreground: 170 30% 12%;
+    --accent: 45 96% 50%;
+    --accent-foreground: 0 0% 9%;
 
     --destructive: 0 72% 51%;
-    --destructive-foreground: 40 40% 97%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 40 20% 88%;
-    --input: 40 20% 88%;
-    --ring: 168 55% 21%;
+    --border: 0 0% 89%;
+    --input: 0 0% 89%;
+    --ring: 45 96% 45%;
 
     --radius: 1rem;
 
-    /* Brand extras */
-    --brand-gold: 38 60% 50%;
-    --brand-gold-soft: 38 60% 93%;
-    --brand-emerald: 168 55% 21%;
-    --brand-emerald-soft: 168 40% 93%;
+    /* Brand extras (names kept from v1 so components don't change) */
+    --brand-gold: 45 96% 50%;
+    --brand-gold-soft: 47 100% 92%;
+    --brand-emerald: 0 0% 10%;
+    --brand-emerald-soft: 47 100% 93%;
     --brand-terracotta: 16 65% 55%;
 
-    --gradient-hero: linear-gradient(150deg, hsl(168 55% 17%) 0%, hsl(168 50% 24%) 55%, hsl(160 45% 30%) 100%);
-    --gradient-gold: linear-gradient(135deg, hsl(38 65% 46%), hsl(45 75% 58%));
+    --gradient-hero: linear-gradient(150deg, hsl(0 0% 5%) 0%, hsl(0 0% 11%) 55%, hsl(0 0% 16%) 100%);
+    --gradient-gold: linear-gradient(135deg, hsl(45 98% 48%), hsl(51 100% 58%));
 
-    --shadow-card: 0 2px 16px -4px hsl(168 55% 21% / 0.08);
-    --shadow-elevated: 0 12px 40px -12px hsl(168 55% 21% / 0.25);
-    --shadow-gold: 0 8px 24px -8px hsl(38 60% 50% / 0.45);
+    --shadow-card: 0 2px 16px -4px hsl(0 0% 0% / 0.09);
+    --shadow-elevated: 0 12px 40px -12px hsl(0 0% 0% / 0.28);
+    --shadow-gold: 0 8px 24px -8px hsl(45 96% 50% / 0.55);
 
     /* Legacy tokens kept for the archived veahealth components */
     --vea-blue: 217 91% 60%;
@@ -86,36 +86,36 @@
   }
 
   .dark {
-    --background: 170 30% 7%;
-    --foreground: 40 30% 94%;
+    --background: 0 0% 7%;
+    --foreground: 0 0% 96%;
 
-    --card: 170 25% 10%;
-    --card-foreground: 40 30% 94%;
+    --card: 0 0% 11%;
+    --card-foreground: 0 0% 96%;
 
-    --popover: 170 25% 10%;
-    --popover-foreground: 40 30% 94%;
+    --popover: 0 0% 11%;
+    --popover-foreground: 0 0% 96%;
 
-    --primary: 165 45% 45%;
-    --primary-foreground: 170 30% 8%;
+    --primary: 0 0% 96%;
+    --primary-foreground: 0 0% 9%;
 
-    --secondary: 38 60% 55%;
-    --secondary-foreground: 170 30% 8%;
+    --secondary: 45 96% 52%;
+    --secondary-foreground: 0 0% 9%;
 
-    --muted: 170 20% 14%;
-    --muted-foreground: 40 15% 65%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 64%;
 
-    --accent: 38 60% 55%;
-    --accent-foreground: 170 30% 8%;
+    --accent: 45 96% 52%;
+    --accent-foreground: 0 0% 9%;
 
     --destructive: 0 62% 45%;
-    --destructive-foreground: 40 30% 94%;
+    --destructive-foreground: 0 0% 96%;
 
-    --border: 170 20% 18%;
-    --input: 170 20% 18%;
-    --ring: 165 45% 45%;
+    --border: 0 0% 18%;
+    --input: 0 0% 18%;
+    --ring: 45 96% 52%;
 
-    --brand-gold-soft: 38 40% 16%;
-    --brand-emerald-soft: 168 30% 14%;
+    --brand-gold-soft: 45 70% 15%;
+    --brand-emerald-soft: 45 60% 14%;
 
     --shadow-card: 0 2px 16px -4px hsl(0 0% 0% / 0.4);
     --shadow-elevated: 0 12px 40px -12px hsl(0 0% 0% / 0.6);
@@ -154,6 +154,10 @@
 
   .bg-hero-gradient {
     background-image: var(--gradient-hero);
+    /* Hero surfaces are always black: pin the tokens used by children so
+       text/buttons read correctly in both light and dark themes. */
+    --primary: 0 0% 10%;
+    --primary-foreground: 0 0% 98%;
   }
   .bg-gold-gradient {
     background-image: var(--gradient-gold);
@@ -161,17 +165,19 @@
 
   /* Subtle dot lattice for hero surfaces (over an existing background) */
   .bg-zellige {
-    background-image: radial-gradient(circle at 1px 1px, hsl(40 40% 97% / 0.14) 1px, transparent 0);
+    background-image: radial-gradient(circle at 1px 1px, hsl(45 96% 60% / 0.13) 1px, transparent 0);
     background-size: 22px 22px;
   }
 
-  /* Emerald hero gradient + dot lattice in one utility (both are
+  /* Black hero gradient + yellow dot lattice in one utility (both are
      background-image, so they must be layered here, not stacked as classes) */
   .bg-hero {
     background-image:
-      radial-gradient(circle at 1px 1px, hsl(40 40% 97% / 0.14) 1px, transparent 0),
+      radial-gradient(circle at 1px 1px, hsl(45 96% 60% / 0.13) 1px, transparent 0),
       var(--gradient-hero);
     background-size: 22px 22px, auto;
+    --primary: 0 0% 10%;
+    --primary-foreground: 0 0% 98%;
   }
 
   /* Standalone PWA safe areas */

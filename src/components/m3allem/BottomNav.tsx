@@ -1,12 +1,13 @@
 import { motion } from "framer-motion";
-import { Home, Search, User } from "lucide-react";
+import { ClipboardList, Home, Siren, User } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 
 const TABS = [
   { path: "/home", labelKey: "nav.home", icon: Home },
-  { path: "/search", labelKey: "nav.search", icon: Search },
+  { path: "/urgent", labelKey: "nav.urgent", icon: Siren },
+  { path: "/jobs", labelKey: "nav.jobs", icon: ClipboardList },
   { path: "/profile", labelKey: "nav.profile", icon: User },
 ] as const;
 
@@ -27,7 +28,7 @@ export function BottomNav() {
               whileTap={{ scale: 0.88 }}
               onClick={() => navigate(tab.path)}
               className={cn(
-                "relative flex flex-col items-center gap-0.5 rounded-2xl px-5 py-1.5 text-[11px] font-bold transition-colors",
+                "relative flex flex-col items-center gap-0.5 rounded-2xl px-4 py-1.5 text-[11px] font-bold transition-colors",
                 active ? "text-primary" : "text-muted-foreground",
               )}
             >
@@ -35,7 +36,7 @@ export function BottomNav() {
                 <motion.span
                   layoutId="nav-pill"
                   transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                  className="absolute inset-0 rounded-2xl bg-brand-emerald-soft"
+                  className="absolute inset-0 rounded-2xl bg-brand-gold-soft"
                 />
               )}
               <tab.icon className="relative h-5 w-5" />
