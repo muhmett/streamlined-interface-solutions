@@ -1,73 +1,58 @@
-# Welcome to your Lovable project
+# المعلّم — M3allem
 
-## Project info
+A luxury, trust-based **PWA marketplace for Moroccan handymen** (بلومبي، تريسيان، نجار، صباغ…), fully localized in **Moroccan Darija** (Arabic script, RTL).
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## ✨ Features
 
-## How can I edit this code?
+- **Darija-first i18n** — every string lives in [`src/locales/darija.json`](src/locales/darija.json); edit that file to update any text. RTL is applied automatically from the language config in `src/i18n/index.ts`.
+- **Supabase Auth** — Google OAuth + Moroccan phone number (+212) with 6-digit OTP verification.
+- **Framer Motion everywhere** — blur-fade page transitions, bottom-sheet modals, magic-move tab bar, staggered lists, springy micro-interactions.
+- **Verified badge system** — artisans upload CIN (ID) photos to a private storage bucket; approval flips the ✓ badge via a DB trigger.
+- **Reviews** — 5-star rating + Darija text reviews, one per client per artisan, with automatic rating aggregation.
+- **Smart search** — free text + craft category chips + geolocation distance radius (haversine client-side, `nearby_artisans` RPC server-side) + verified-only filter + sort by distance/rating.
+- **Installable PWA** — manifest (RTL, Arabic), offline-cached shell and fonts via `vite-plugin-pwa`.
 
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+## 🚀 Getting started
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+npm install
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+Without configuration the app runs in **demo mode**: sample artisans/reviews, simulated Google login, and phone OTP that accepts the code `123456` — so you can browse the full experience immediately.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 🔌 Connecting Supabase
 
-**Use GitHub Codespaces**
+1. Create a project at [supabase.com](https://supabase.com).
+2. Run [`supabase/schema.sql`](supabase/schema.sql) in the SQL editor (tables, RLS, triggers, private `id-documents` bucket, nearby-search RPC).
+3. **Google OAuth**: Authentication → Providers → Google → add your OAuth client ID/secret, and add your site URL to the redirect allowlist.
+4. **Phone OTP**: Authentication → Providers → Phone → enable, and connect an SMS provider (Twilio / Vonage / MessageBird).
+5. Copy `.env.example` to `.env` and fill in:
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+```sh
+VITE_SUPABASE_URL=https://xxxx.supabase.co
+VITE_SUPABASE_ANON_KEY=eyJ...
+```
 
-## What technologies are used for this project?
+## 🗂 Structure
 
-This project is built with:
+```
+src/
+├── locales/darija.json      # ALL app text — edit Darija here
+├── i18n/                    # i18next setup + RTL direction handling
+├── contexts/AuthContext.tsx # Google OAuth + phone OTP (+ demo fallback)
+├── lib/
+│   ├── supabase.ts          # client (demo mode when env vars missing)
+│   ├── api.ts               # data layer: artisans, reviews, verification
+│   └── geo.ts               # haversine distance
+├── components/m3allem/      # SearchBar, ArtisanCard, VerifiedBadge,
+│                            # StarRating, ReviewModal, BottomNav, transitions
+├── pages/                   # Welcome, Login, Home, ArtisanProfile,
+│                            # Profile, Verification
+└── data/                    # craft categories + demo dataset
+supabase/schema.sql          # full database schema with RLS
+```
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## 🛠 Stack
 
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+React 18 · TypeScript · Vite · Tailwind CSS (shadcn/ui) · Framer Motion · Supabase (Auth / Postgres / Storage) · TanStack Query · i18next · vite-plugin-pwa

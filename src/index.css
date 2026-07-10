@@ -1,44 +1,65 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Tajawal:wght@400;500;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap');
-
-/* VeaHealth SEO Strategy Design System */
+/*
+ * M3allem — المعلّم — Design System
+ * Luxury, trust-based Moroccan palette: deep zellige emerald, warm brass,
+ * ivory backgrounds. All colors are HSL triplets consumed by Tailwind
+ * through hsl(var(--token)).
+ */
 
 @layer base {
   :root {
-    --background: 210 40% 98%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 40 33% 97%;
+    --foreground: 170 30% 12%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 170 30% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 170 30% 12%;
 
-    --primary: 217 91% 60%;
-    --primary-foreground: 210 40% 98%;
+    /* Deep zellige emerald */
+    --primary: 168 55% 21%;
+    --primary-foreground: 40 40% 97%;
 
-    --secondary: 142 71% 45%;
-    --secondary-foreground: 0 0% 100%;
+    /* Warm brass / gold */
+    --secondary: 38 60% 50%;
+    --secondary-foreground: 170 30% 12%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 40 25% 93%;
+    --muted-foreground: 170 12% 42%;
 
-    --accent: 270 76% 60%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 38 60% 50%;
+    --accent-foreground: 170 30% 12%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 40 40% 97%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 217 91% 60%;
+    --border: 40 20% 88%;
+    --input: 40 20% 88%;
+    --ring: 168 55% 21%;
 
-    --radius: 0.75rem;
+    --radius: 1rem;
 
-    /* VeaHealth Custom Colors */
+    /* Brand extras */
+    --brand-gold: 38 60% 50%;
+    --brand-gold-soft: 38 60% 93%;
+    --brand-emerald: 168 55% 21%;
+    --brand-emerald-soft: 168 40% 93%;
+    --brand-terracotta: 16 65% 55%;
+
+    --gradient-hero: linear-gradient(150deg, hsl(168 55% 17%) 0%, hsl(168 50% 24%) 55%, hsl(160 45% 30%) 100%);
+    --gradient-gold: linear-gradient(135deg, hsl(38 65% 46%), hsl(45 75% 58%));
+
+    --shadow-card: 0 2px 16px -4px hsl(168 55% 21% / 0.08);
+    --shadow-elevated: 0 12px 40px -12px hsl(168 55% 21% / 0.25);
+    --shadow-gold: 0 8px 24px -8px hsl(38 60% 50% / 0.45);
+
+    /* Legacy tokens kept for the archived veahealth components */
     --vea-blue: 217 91% 60%;
     --vea-blue-light: 217 91% 95%;
     --vea-green: 142 71% 45%;
@@ -54,16 +75,6 @@
     --vea-red: 0 84% 60%;
     --vea-red-light: 0 84% 95%;
 
-    /* Gradients */
-    --gradient-hero: linear-gradient(135deg, hsl(217 91% 60%), hsl(142 71% 45%), hsl(270 76% 60%));
-    --gradient-blue: linear-gradient(135deg, hsl(217 91% 55%), hsl(217 91% 65%));
-    --gradient-green: linear-gradient(135deg, hsl(142 71% 40%), hsl(142 71% 50%));
-    --gradient-purple: linear-gradient(135deg, hsl(270 76% 55%), hsl(270 76% 65%));
-
-    /* Shadows */
-    --shadow-card: 0 4px 20px -4px hsl(217 91% 60% / 0.15);
-    --shadow-elevated: 0 10px 40px -10px hsl(217 91% 60% / 0.25);
-
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
     --sidebar-primary: 240 5.9% 10%;
@@ -75,41 +86,39 @@
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 170 30% 7%;
+    --foreground: 40 30% 94%;
 
-    --card: 222.2 84% 8%;
-    --card-foreground: 210 40% 98%;
+    --card: 170 25% 10%;
+    --card-foreground: 40 30% 94%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 170 25% 10%;
+    --popover-foreground: 40 30% 94%;
 
-    --primary: 217 91% 60%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 165 45% 45%;
+    --primary-foreground: 170 30% 8%;
 
-    --secondary: 142 71% 45%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 38 60% 55%;
+    --secondary-foreground: 170 30% 8%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 170 20% 14%;
+    --muted-foreground: 40 15% 65%;
 
-    --accent: 270 76% 60%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 38 60% 55%;
+    --accent-foreground: 170 30% 8%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 62% 45%;
+    --destructive-foreground: 40 30% 94%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --border: 170 20% 18%;
+    --input: 170 20% 18%;
+    --ring: 165 45% 45%;
+
+    --brand-gold-soft: 38 40% 16%;
+    --brand-emerald-soft: 168 30% 14%;
+
+    --shadow-card: 0 2px 16px -4px hsl(0 0% 0% / 0.4);
+    --shadow-elevated: 0 12px 40px -12px hsl(0 0% 0% / 0.6);
   }
 }
 
@@ -118,16 +127,58 @@
     @apply border-border;
   }
 
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+
   body {
-    @apply bg-background text-foreground font-cairo;
+    @apply bg-background text-foreground font-cairo antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Latin digits inside RTL text (phone numbers, OTP) keep LTR order */
+  .ltr-nums {
+    direction: ltr;
+    unicode-bidi: embed;
   }
 }
 
-/* Custom scrollbar hide */
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-}
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+@layer utilities {
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .bg-hero-gradient {
+    background-image: var(--gradient-hero);
+  }
+  .bg-gold-gradient {
+    background-image: var(--gradient-gold);
+  }
+
+  /* Subtle dot lattice for hero surfaces (over an existing background) */
+  .bg-zellige {
+    background-image: radial-gradient(circle at 1px 1px, hsl(40 40% 97% / 0.14) 1px, transparent 0);
+    background-size: 22px 22px;
+  }
+
+  /* Emerald hero gradient + dot lattice in one utility (both are
+     background-image, so they must be layered here, not stacked as classes) */
+  .bg-hero {
+    background-image:
+      radial-gradient(circle at 1px 1px, hsl(40 40% 97% / 0.14) 1px, transparent 0),
+      var(--gradient-hero);
+    background-size: 22px 22px, auto;
+  }
+
+  /* Standalone PWA safe areas */
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .pt-safe {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
 }

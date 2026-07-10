@@ -14,7 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        cairo: ["Cairo", "sans-serif"],
+        cairo: ["Cairo", "Tajawal", "sans-serif"],
+        tajawal: ["Tajawal", "Cairo", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -60,6 +61,13 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        brand: {
+          gold: "hsl(var(--brand-gold))",
+          "gold-soft": "hsl(var(--brand-gold-soft))",
+          emerald: "hsl(var(--brand-emerald))",
+          "emerald-soft": "hsl(var(--brand-emerald-soft))",
+          terracotta: "hsl(var(--brand-terracotta))",
+        },
         vea: {
           blue: "hsl(var(--vea-blue))",
           "blue-light": "hsl(var(--vea-blue-light))",
@@ -87,6 +95,7 @@ export default {
       boxShadow: {
         card: "var(--shadow-card)",
         elevated: "var(--shadow-elevated)",
+        gold: "var(--shadow-gold)",
       },
       keyframes: {
         "accordion-down": {
