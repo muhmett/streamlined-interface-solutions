@@ -6,6 +6,7 @@ import { PageTransition, staggerContainer, staggerItem } from "@/components/m3al
 import { SearchBar } from "@/components/m3allem/SearchBar";
 import { ArtisanCard } from "@/components/m3allem/ArtisanCard";
 import { BottomNav } from "@/components/m3allem/BottomNav";
+import { ProximityMap } from "@/components/m3allem/ProximityMap";
 import { CATEGORIES } from "@/data/categories";
 import { fetchArtisans } from "@/lib/api";
 import { useGeolocation } from "@/hooks/useGeolocation";
@@ -120,6 +121,17 @@ export default function Home() {
               );
             })}
           </motion.div>
+        </section>
+
+        {/* Map: artisans around the client */}
+        <section className="mt-6">
+          <h2 className="mb-3 text-lg font-black">{t("map.title")}</h2>
+          <ProximityMap
+            artisans={results}
+            userPos={position}
+            geoStatus={geoStatus}
+            onRequestLocation={locate}
+          />
         </section>
 
         {/* Results */}

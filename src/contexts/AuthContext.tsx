@@ -17,6 +17,8 @@ interface DemoUser {
   email?: string;
 }
 
+export type UserRole = "client" | "artisan";
+
 interface AuthContextValue {
   /** Real Supabase user when configured, otherwise the demo user. */
   user: User | DemoUser | null;
@@ -24,6 +26,9 @@ interface AuthContextValue {
   loading: boolean;
   isDemo: boolean;
   displayName: string | null;
+  /** Chosen on the role screen after first login; null until picked. */
+  role: UserRole | null;
+  setRole: (role: UserRole) => void;
   signInWithGoogle: () => Promise<void>;
   /** Sends the OTP SMS. Phone must be E.164 (+2126XXXXXXXX). */
   signInWithPhone: (phone: string) => Promise<void>;
@@ -34,6 +39,7 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 const DEMO_STORAGE_KEY = "m3allem.demo-user";
+const ROLE_STORAGE_KEY = "m3allem.role";
 /** OTP accepted in demo mode. */
 export const DEMO_OTP = "123456";
 
@@ -48,6 +54,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   });
   const [loading, setLoading] = useState(isSupabaseConfigured);
+  const [role, setRoleState] = useState<UserRole | null>(
+    () => localStorage.getItem(ROLE_STORAGE_KEY) as UserRole | null,
+  );
 
   useEffect(() => {
     if (!supabase) return;
@@ -106,9 +115,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [persistDemoUser],
   );
 
+  const setRole = useCallback(
+    (newRole: UserRole) => {
+      setRoleState(newRole);
+      localStorage.setItem(ROLE_STORAGE_KEY, newRole);
+      // Mirror to the profiles table when Supabase is live (best-effort).
+      const uid = session?.user?.id;
+      if (supabase && uid) {
+        void supabase.from("profiles").update({ role: newRole }).eq("id", uid);
+      }
+    },
+    [session],
+  );
+
   const signOut = useCallback(async () => {
     if (supabase) await supabase.auth.signOut();
     persistDemoUser(null);
+    setRoleState(null);
+    localStorage.removeItem(ROLE_STORAGE_KEY);
   }, [persistDemoUser]);
 
   const user = session?.user ?? demoUser;
@@ -131,6 +155,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     loading,
     isDemo: !isSupabaseConfigured,
     displayName,
+    role,
+    setRole,
     signInWithGoogle,
     signInWithPhone,
     verifyOtp,

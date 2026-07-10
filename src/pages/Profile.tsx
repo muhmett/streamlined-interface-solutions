@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { BadgeCheck, ChevronLeft, HelpCircle, Info, LogOut, Star, User } from "lucide-react";
+import { BadgeCheck, ChevronLeft, HardHat, HelpCircle, Info, LogOut, Star, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
@@ -22,7 +22,7 @@ import { fetchVerificationStatus } from "@/lib/api";
 export default function Profile() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { user, displayName, signOut } = useAuth();
+  const { user, displayName, role, signOut } = useAuth();
 
   const { data: verificationStatus } = useQuery({
     queryKey: ["verification", user?.id],
@@ -31,6 +31,11 @@ export default function Profile() {
   });
 
   const rows = [
+    {
+      icon: HardHat,
+      label: role === "artisan" ? t("setup.editTitle") : t("profile.becomeArtisan"),
+      onClick: () => navigate("/artisan-setup"),
+    },
     {
       icon: BadgeCheck,
       label: t("profile.verification"),

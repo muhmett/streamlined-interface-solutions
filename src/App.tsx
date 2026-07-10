@@ -6,6 +6,8 @@ import { BrowserRouter, Navigate, Routes, Route, useLocation } from "react-route
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import Welcome from "./pages/Welcome";
 import Login from "./pages/Login";
+import RoleSelect from "./pages/RoleSelect";
+import ArtisanSetup from "./pages/ArtisanSetup";
 import Home from "./pages/Home";
 import ArtisanProfile from "./pages/ArtisanProfile";
 import Profile from "./pages/Profile";
@@ -28,6 +30,22 @@ function AnimatedRoutes() {
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<Welcome />} />
         <Route path="/login" element={<Login />} />
+        <Route
+          path="/role"
+          element={
+            <ProtectedRoute>
+              <RoleSelect />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/artisan-setup"
+          element={
+            <ProtectedRoute>
+              <ArtisanSetup />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/home" element={<Home />} />
         <Route path="/search" element={<Home />} />
         <Route path="/artisan/:id" element={<ArtisanProfile />} />

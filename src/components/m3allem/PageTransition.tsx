@@ -4,18 +4,20 @@ import type { ReactNode } from "react";
 /** Shared easing — a soft "luxury" decelerate used across the app. */
 export const EASE = [0.22, 1, 0.36, 1] as const;
 
+// No `filter` here on purpose: a residual filter (even blur(0px)) makes the
+// page wrapper a containing block, which re-anchors every position:fixed
+// child (bottom nav, modals, fullscreen map) to the page instead of the viewport.
 const pageVariants: Variants = {
-  initial: { opacity: 0, y: 24, filter: "blur(4px)" },
+  initial: { opacity: 0, y: 24 },
   enter: {
     opacity: 1,
     y: 0,
-    filter: "blur(0px)",
     transition: { duration: 0.45, ease: EASE },
+    transitionEnd: { transform: "none" },
   },
   exit: {
     opacity: 0,
     y: -16,
-    filter: "blur(4px)",
     transition: { duration: 0.25, ease: "easeIn" },
   },
 };

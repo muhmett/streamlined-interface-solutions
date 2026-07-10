@@ -23,7 +23,7 @@ const stepVariants = {
 export default function Login() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { user, isDemo, signInWithGoogle, signInWithPhone, verifyOtp } = useAuth();
+  const { user, role, isDemo, signInWithGoogle, signInWithPhone, verifyOtp } = useAuth();
 
   const [step, setStep] = useState<Step>("method");
   const [direction, setDirection] = useState(1);
@@ -35,10 +35,10 @@ export default function Login() {
   const fullPhone = useMemo(() => `+212${phone}`, [phone]);
   const phoneValid = MA_PHONE_RE.test(phone);
 
-  // Already signed in (or OAuth redirect just landed) → go home.
+  // Signed in (or OAuth redirect just landed): first-timers pick a role.
   useEffect(() => {
-    if (user) navigate("/home", { replace: true });
-  }, [user, navigate]);
+    if (user) navigate(role ? "/home" : "/role", { replace: true });
+  }, [user, role, navigate]);
 
   useEffect(() => {
     if (resendIn <= 0) return;

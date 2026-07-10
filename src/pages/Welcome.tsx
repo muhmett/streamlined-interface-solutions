@@ -3,6 +3,7 @@ import { BadgeCheck, MapPin, Star, Wrench } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { PageTransition, EASE, staggerContainer, staggerItem } from "@/components/m3allem/PageTransition";
+import { ParticleField } from "@/components/m3allem/ParticleField";
 import { Button } from "@/components/ui/button";
 
 const FEATURES = [
@@ -16,8 +17,10 @@ export default function Welcome() {
   const navigate = useNavigate();
 
   return (
-    <PageTransition className="flex min-h-dvh flex-col bg-hero-gradient">
-      <div className="bg-zellige flex min-h-dvh flex-col px-6 pb-10 pt-safe">
+    <PageTransition className="relative flex min-h-dvh flex-col overflow-hidden bg-hero-gradient">
+      {/* Gold particles morphing into craft-tool shapes */}
+      <ParticleField className="pointer-events-none absolute inset-0 h-full w-full" />
+      <div className="bg-zellige relative flex min-h-dvh flex-col px-6 pb-10 pt-safe">
         {/* Logo mark */}
         <motion.div
           initial={{ scale: 0.5, opacity: 0, rotate: -12 }}

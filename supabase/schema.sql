@@ -46,7 +46,7 @@ create trigger on_auth_user_created
 -- ---------- artisans ----------
 create table if not exists public.artisans (
   id uuid primary key default gen_random_uuid(),
-  user_id uuid references auth.users (id) on delete set null,
+  user_id uuid unique references auth.users (id) on delete set null, -- one listing per artisan
   name text not null,
   category text not null check (category in (
     'plumbing','electricity','carpentry','painting','masonry',
