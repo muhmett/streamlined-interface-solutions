@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { BadgeCheck, Camera, ChevronLeft, HardHat, HelpCircle, Info, LogOut, Star, User } from "lucide-react";
+import { BadgeCheck, Camera, ChartNoAxesColumn, ChevronLeft, HardHat, HelpCircle, Info, LogOut, Star, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useAuth } from "@/contexts/AuthContext";
 import { fetchVerificationStatus } from "@/lib/api";
+import { LanguageSwitcher } from "@/components/m3allem/LanguageSwitcher";
 
 export default function Profile() {
   const { t } = useTranslation();
@@ -38,6 +39,11 @@ export default function Profile() {
     },
     ...(role === "artisan"
       ? [
+          {
+            icon: ChartNoAxesColumn,
+            label: t("dashboard.title"),
+            onClick: () => navigate("/dashboard"),
+          },
           {
             icon: Camera,
             label: t("portfolio.title"),
@@ -105,6 +111,8 @@ export default function Profile() {
             </motion.button>
           ))}
         </motion.div>
+
+        <LanguageSwitcher className="mt-6" />
 
         {/* Logout with confirm dialog */}
         {user && (

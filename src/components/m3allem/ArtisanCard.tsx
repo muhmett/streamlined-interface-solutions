@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import type { Artisan } from "@/types";
 import { categoryById } from "@/data/categories";
+import { CategoryVisual } from "./CategoryVisual";
 import { VerifiedBadge } from "./VerifiedBadge";
 import { staggerItem } from "./PageTransition";
 
@@ -11,7 +12,6 @@ export function ArtisanCard({ artisan }: { artisan: Artisan }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const category = categoryById(artisan.category);
-  const CategoryIcon = category.icon;
 
   return (
     <motion.button
@@ -24,11 +24,11 @@ export function ArtisanCard({ artisan }: { artisan: Artisan }) {
       <div className="flex items-center gap-4">
         {/* Avatar with category glyph fallback */}
         <div className="relative shrink-0">
-          <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl bg-brand-emerald-soft text-primary">
+          <div className="h-16 w-16 overflow-hidden rounded-2xl bg-brand-gold-soft text-foreground">
             {artisan.avatarUrl ? (
               <img src={artisan.avatarUrl} alt={artisan.name} className="h-full w-full object-cover" />
             ) : (
-              <CategoryIcon className="h-7 w-7" />
+              <CategoryVisual category={category} className="h-full w-full" />
             )}
           </div>
           {artisan.isVerified && (

@@ -13,6 +13,7 @@ import ArtisanProfile from "./pages/ArtisanProfile";
 import Jobs from "./pages/Jobs";
 import Urgent from "./pages/Urgent";
 import MyPortfolio from "./pages/MyPortfolio";
+import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
 import Verification from "./pages/Verification";
 import NotFound from "./pages/NotFound";
@@ -61,6 +62,14 @@ function AnimatedRoutes() {
           }
         />
         <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/my-portfolio"
           element={
             <ProtectedRoute>
@@ -84,12 +93,12 @@ function AnimatedRoutes() {
   );
 }
 
-const App = () => (
+const App = ({ basename }: { basename?: string }) => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <TooltipProvider>
         <Sonner position="top-center" dir="rtl" />
-        <BrowserRouter>
+        <BrowserRouter basename={basename}>
           <AnimatedRoutes />
         </BrowserRouter>
       </TooltipProvider>

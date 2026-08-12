@@ -8,6 +8,7 @@ import { ArtisanCard } from "@/components/m3allem/ArtisanCard";
 import { BottomNav } from "@/components/m3allem/BottomNav";
 import { ProximityMap } from "@/components/m3allem/ProximityMap";
 import { CATEGORIES } from "@/data/categories";
+import { CategoryVisual } from "@/components/m3allem/CategoryVisual";
 import { fetchArtisans } from "@/lib/api";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { distanceKm } from "@/lib/geo";
@@ -106,13 +107,18 @@ export default function Home() {
                 >
                   <span
                     className={cn(
-                      "flex h-16 w-16 items-center justify-center rounded-2xl shadow-card transition-colors",
+                      "relative h-16 w-16 overflow-hidden rounded-2xl shadow-card transition-all",
                       active
-                        ? "bg-primary text-primary-foreground ring-2 ring-secondary"
-                        : "bg-card text-primary ring-1 ring-border/60",
+                        ? "text-primary-foreground ring-2 ring-secondary"
+                        : "text-primary ring-1 ring-border/60",
                     )}
                   >
-                    <c.icon className="h-7 w-7" />
+                    <CategoryVisual
+                      category={c}
+                      className="h-full w-full bg-brand-gold-soft"
+                      iconClassName="text-foreground"
+                    />
+                    {active && <span className="absolute inset-0 bg-secondary/35" />}
                   </span>
                   <span className={cn("text-xs font-bold", active ? "text-primary" : "text-muted-foreground")}>
                     {t(c.labelKey)}

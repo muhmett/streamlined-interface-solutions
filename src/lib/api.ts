@@ -16,9 +16,12 @@ import type {
  * Table shapes live in supabase/schema.sql.
  */
 
-// Demo-mode reviews live in module state so newly submitted ones show up.
-let demoReviews: Review[] = [...DEMO_REVIEWS];
 let demoVerification: VerificationStatus = "none";
+
+// Demo-mode reviews are persisted so seeded history and newly submitted
+// reviews survive a page reload, same as jobs and portfolio posts.
+const REVIEWS_KEY = "m3allem.reviews";
+const readDemoReviews = (): Review[] => [...readLocal<Review>(REVIEWS_KEY), ...DEMO_REVIEWS];
 
 const MY_LISTING_KEY = "m3allem.my-listing";
 
@@ -57,7 +60,7 @@ export async function fetchArtisan(id: string): Promise<Artisan | null> {
 
 export async function fetchReviews(artisanId: string): Promise<Review[]> {
   if (!supabase) {
-    return demoReviews
+    return readDemoReviews()
       .filter((r) => r.artisanId === artisanId)
       .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   }
@@ -78,7 +81,7 @@ export async function submitReview(input: {
   comment: string;
 }): Promise<void> {
   if (!supabase) {
-    demoReviews = [
+    writeLocal(REVIEWS_KEY, [
       {
         id: `demo-${Date.now()}`,
         artisanId: input.artisanId,
@@ -88,8 +91,8 @@ export async function submitReview(input: {
         comment: input.comment,
         createdAt: new Date().toISOString(),
       },
-      ...demoReviews,
-    ];
+      ...readLocal<Review>(REVIEWS_KEY),
+    ]);
     return;
   }
   const { error } = await supabase.from("reviews").insert({
@@ -183,6 +186,7 @@ export async function saveMyListing(userId: string, input: MyListingInput): Prom
       lng: input.lng ?? existing?.lng ?? 0,
     };
     localStorage.setItem(MY_LISTING_KEY, JSON.stringify(listing));
+    if (!existing) seedDemoHistory(listing);
     return;
   }
   const row = {
@@ -205,6 +209,83 @@ export async function saveMyListing(userId: string, input: MyListingInput): Prom
     ? await supabase.from("artisans").update(row).eq("id", existing.id)
     : await supabase.from("artisans").insert(row);
   if (error) throw error;
+}
+
+/**
+ * Demo mode only: give a freshly created listing a little past history so the
+ * dashboard has something to plot. Never runs when Supabase is configured —
+ * a live account always starts from its own real records.
+ */
+function seedDemoHistory(listing: Artisan) {
+  const SAMPLE = [
+    { name: "أمين", rating: 5, comment: "خدمة نقية والله! جا فالوقت وكمل بسرعة.", monthsAgo: 0 },
+    { name: "سلمى", rating: 5, comment: "احترافي ونظيف فالخدمة. كنصح بيه.", monthsAgo: 0 },
+    { name: "مهدي", rating: 4, comment: "مزيان، غير تعطل شوية على الموعد.", monthsAgo: 1 },
+    { name: "خديجة", rating: 5, comment: "صلح ليا مشكل تعبت معاه بزاف. معلّم بصح!", monthsAgo: 1 },
+    { name: "ياسين", rating: 4, comment: "الثمن معقول والخدمة مضبوطة.", monthsAgo: 2 },
+    { name: "عمر", rating: 5, comment: "شغل ديال الصنعة، الله يعطيه الصحة.", monthsAgo: 3 },
+    { name: "نادية", rating: 3, comment: "لاباس، ولكن خاصو يهلا فالتفاصيل كثر.", monthsAgo: 4 },
+  ];
+  const at = (monthsAgo: number, day: number) => {
+    const d = new Date();
+    d.setMonth(d.getMonth() - monthsAgo, Math.min(day, 28));
+    return d.toISOString();
+  };
+
+  const jobs = readLocal<Job>(JOBS_KEY);
+  const reviews: Review[] = [];
+  SAMPLE.forEach((s, i) => {
+    const when = at(s.monthsAgo, 5 + i * 3);
+    jobs.push({
+      id: `seed-job-${i}`,
+      artisanId: listing.id,
+      artisanUserId: null,
+      artisanName: listing.name,
+      artisanPhone: listing.phone,
+      clientId: `seed-client-${i}`,
+      clientName: s.name,
+      clientPhone: "",
+      description: "",
+      status: "completed",
+      createdAt: when,
+      completedAt: when,
+    });
+    reviews.push({
+      id: `seed-review-${i}`,
+      artisanId: listing.id,
+      authorId: `seed-client-${i}`,
+      authorName: s.name,
+      rating: s.rating,
+      comment: s.comment,
+      createdAt: when,
+    });
+  });
+  // One request still waiting, so the pipeline chart isn't flat.
+  jobs.push({
+    id: "seed-job-pending",
+    artisanId: listing.id,
+    artisanUserId: null,
+    artisanName: listing.name,
+    artisanPhone: listing.phone,
+    clientId: "seed-client-pending",
+    clientName: "رشيد",
+    clientPhone: "+212600000000",
+    description: "بغيت نشوف معاك واحد الخدمة نهار السبت.",
+    status: "requested",
+    createdAt: new Date().toISOString(),
+    completedAt: null,
+  });
+  writeLocal(JOBS_KEY, jobs);
+
+  writeLocal(REVIEWS_KEY, [...reviews, ...readLocal<Review>(REVIEWS_KEY)]);
+  const avg = reviews.reduce((s, r) => s + r.rating, 0) / reviews.length;
+  const withStats: Artisan = {
+    ...listing,
+    rating: Math.round(avg * 10) / 10,
+    reviewCount: reviews.length,
+    jobsDone: SAMPLE.length,
+  };
+  localStorage.setItem(MY_LISTING_KEY, JSON.stringify(withStats));
 }
 
 /* ---------- jobs: the service history (ليسطوريك ديال الخدمات) ---------- */
