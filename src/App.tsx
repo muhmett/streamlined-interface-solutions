@@ -2,7 +2,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AnimatePresence } from "framer-motion";
-import { BrowserRouter, Navigate, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, HashRouter, Navigate, Routes, Route, useLocation } from "react-router-dom";
+import { USE_HASH_ROUTER } from "@/lib/lang-boot";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import Welcome from "./pages/Welcome";
 import Login from "./pages/Login";
@@ -93,17 +94,22 @@ function AnimatedRoutes() {
   );
 }
 
-const App = ({ basename }: { basename?: string }) => (
-  <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <TooltipProvider>
-        <Sonner position="top-center" dir="rtl" />
-        <BrowserRouter basename={basename}>
-          <AnimatedRoutes />
-        </BrowserRouter>
-      </TooltipProvider>
-    </AuthProvider>
-  </QueryClientProvider>
-);
+const App = ({ basename }: { basename?: string }) => {
+  // Single-file preview builds are served from an opaque path, so they route
+  // in the hash; the deployed site uses real history URLs.
+  const Router = USE_HASH_ROUTER ? HashRouter : BrowserRouter;
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <TooltipProvider>
+          <Sonner position="top-center" dir="rtl" />
+          <Router basename={basename}>
+            <AnimatedRoutes />
+          </Router>
+        </TooltipProvider>
+      </AuthProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;

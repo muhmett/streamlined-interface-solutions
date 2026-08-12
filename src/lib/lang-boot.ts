@@ -7,6 +7,9 @@ import i18n, { DEFAULT_LANG, applyDirection, isSupportedLang, langFromPath } fro
  * Works for both history routing (production) and hash routing (the
  * single-file preview build), so one entry point covers both.
  */
+/** True in the single-file preview build (see vite.preview.config.ts). */
+export const USE_HASH_ROUTER = import.meta.env.VITE_HASH_ROUTER === "1";
+
 export interface LangBoot {
   lang: string;
   /** Router basename — "/ar" etc. */
@@ -15,8 +18,12 @@ export interface LangBoot {
 }
 
 export function bootLanguage(): LangBoot {
-  const usesHash = window.location.hash.startsWith("#/");
-  const routePath = usesHash ? window.location.hash.slice(1) : window.location.pathname;
+  const usesHash = USE_HASH_ROUTER;
+  // With hash routing the app owns only the hash — the surrounding path
+  // belongs to the host page and must never be rewritten.
+  const routePath = usesHash
+    ? window.location.hash.replace(/^#/, "") || "/"
+    : window.location.pathname;
 
   let lang = langFromPath(routePath);
 
@@ -43,8 +50,10 @@ export function bootLanguage(): LangBoot {
 
 /** Switch language, keeping the visitor on the same page. */
 export function switchLanguage(next: string) {
-  const usesHash = window.location.hash.startsWith("#/");
-  const routePath = usesHash ? window.location.hash.slice(1) : window.location.pathname;
+  const usesHash = USE_HASH_ROUTER;
+  const routePath = usesHash
+    ? window.location.hash.replace(/^#/, "") || "/"
+    : window.location.pathname;
   const current = langFromPath(routePath);
   const rest = current ? routePath.slice(current.length + 1) || "/" : routePath || "/";
 
