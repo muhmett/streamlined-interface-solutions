@@ -30,6 +30,22 @@ $cities  = array_filter( array_map( 'trim', explode( ',', $cities ) ) );
 		</select>
 	</div>
 
+	<div class="geo" id="geo">
+		<span style="font-size:22px">📍</span>
+		<div class="txt" id="geoTxt">
+			<b>قلّب على المعلّمية القريبين منك</b>
+			<span>فعّل الموقع وغادي نرتّبوهم من الأقرب</span>
+		</div>
+		<select id="radius" hidden aria-label="المسافة">
+			<option value="0">أي مسافة</option>
+			<option value="5">5 كلم</option>
+			<option value="10" selected>10 كلم</option>
+			<option value="25">25 كلم</option>
+			<option value="50">50 كلم</option>
+		</select>
+		<button class="btn gold" id="geoBtn">فعّل الموقع</button>
+	</div>
+
 	<div class="filters" id="filters"></div>
 
 	<div class="grid g3" id="results" style="margin-bottom:26px">

@@ -20,20 +20,27 @@ $notice  = isset( $_GET['m3'] ) ? sanitize_key( wp_unslash( $_GET['m3'] ) ) : ''
 <?php if ( ! $profile ) : ?>
 
 	<div class="head">
-		<div><h2>سجّل كمعلّم</h2><p>عمّر المعلومات ديالك وغادي تبان فالزون ديال الصنعة ديالك</p></div>
+		<div><h2>سجّل كمعلّم</h2><p>غير التيليفون والحرفة — بلا حساب وبلا كود ديال السر</p></div>
 		<a class="btn ghost" href="<?php echo esc_url( home_url( '/' ) ); ?>">← رجع للجولة</a>
 	</div>
 
-	<?php if ( 'dup' === $notice ) : ?>
-		<div class="card urg" style="margin-bottom:16px">هاد الإيميل مسجّل من قبل. <a style="color:var(--gold)" href="<?php echo esc_url( wp_login_url( get_permalink() ) ); ?>">دخل لحسابك</a></div>
+	<?php if ( 'thanks' === $notice ) : ?>
+		<div class="card" style="margin-bottom:16px;border-color:rgba(110,231,168,.45);background:rgba(110,231,168,.07)">
+			<h3 style="font-size:20px;font-weight:900">وصلنا الطلب ديالك ✓</h3>
+			<p style="opacity:.8;margin-top:8px;line-height:1.9">غادي نشوفوه ونحطّوك فالزون ديال الصنعة ديالك. غادي نعيّطو ليك فالتيليفون لي عطيتينا.</p>
+		</div>
+	<?php elseif ( 'dup' === $notice ) : ?>
+		<div class="card urg" style="margin-bottom:16px">هاد الرقم مسجّل من قبل. إلا كان عندك شي مشكل عيّط لنا.</div>
 	<?php elseif ( 'bad' === $notice ) : ?>
-		<div class="card urg" style="margin-bottom:16px">شي معلومة ناقصة ولا غالطة. عاود عمّرها عافاك (الكود ديال السر خاصو 6 حروف على الأقل).</div>
+		<div class="card urg" style="margin-bottom:16px">خاصنا السمية، الحرفة، والتيليفون. عاود عمّرهم عافاك.</div>
 	<?php endif; ?>
 
 	<div class="card" style="max-width:620px">
-		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" id="joinForm">
 			<?php wp_nonce_field( 'm3_signup' ); ?>
 			<input type="hidden" name="action" value="m3_signup">
+			<input type="hidden" name="lat" id="j-lat" value="">
+			<input type="hidden" name="lng" id="j-lng" value="">
 
 			<p class="m3-field"><label for="s-name">السمية ديالك</label>
 				<input id="s-name" name="name" type="text" required placeholder="مثلا: محمد العلوي"></p>
@@ -46,20 +53,26 @@ $notice  = isset( $_GET['m3'] ) ? sanitize_key( wp_unslash( $_GET['m3'] ) ) : ''
 					<?php endforeach; ?>
 				</select></p>
 
-			<p class="m3-field"><label for="s-city">المدينة</label>
-				<input id="s-city" name="city" type="text" placeholder="الدار البيضاء"></p>
-
 			<p class="m3-field"><label for="s-tel">التيليفون</label>
 				<input id="s-tel" name="tel" type="tel" required placeholder="0661234567"></p>
 
-			<p class="m3-field"><label for="s-email">الإيميل</label>
-				<input id="s-email" name="email" type="email" required></p>
+			<p class="m3-field"><label for="s-city">المدينة</label>
+				<input id="s-city" name="city" type="text" placeholder="الدار البيضاء"></p>
 
-			<p class="m3-field"><label for="s-pass">الكود ديال السر</label>
-				<input id="s-pass" name="pass" type="password" required minlength="6"></p>
+			<p class="m3-field"><label for="s-bio">شنو كتخدم بالضبط</label>
+				<textarea id="s-bio" name="bio" rows="3" placeholder="مثلا: تركيب وإصلاح التابلو والبريز، كنخدم من 12 عام."></textarea></p>
 
-			<button class="btn gold" type="submit" style="width:100%;justify-content:center">سجّل وبان للناس</button>
-			<p style="opacity:.6;font-size:13px;margin-top:12px">الحساب ديالك غادي يتشيّك من طرف الإدارة قبل ما يبان للعموم.</p>
+			<div class="geo" id="joinGeo" style="margin-bottom:16px">
+				<span style="font-size:22px">📍</span>
+				<div class="txt" id="joinGeoTxt">
+					<b>حدّد البلاصة ديالك</b>
+					<span>باش الكليان لي قريب منك يلقاك الأول</span>
+				</div>
+				<button class="btn ghost" type="button" id="joinGeoBtn">حدّد الموقع</button>
+			</div>
+
+			<button class="btn gold" type="submit" style="width:100%;justify-content:center">صيفط الطلب</button>
+			<p style="opacity:.6;font-size:13px;margin-top:12px">ماكنطلبو منك لا إيميل لا كود ديال السر. غادي نشوفو الطلب ونعيّطو ليك.</p>
 		</form>
 	</div>
 

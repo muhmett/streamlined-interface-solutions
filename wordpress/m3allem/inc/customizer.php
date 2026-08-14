@@ -45,19 +45,37 @@ function m3allem_customize( $wp_customize ) {
 		)
 	);
 
-	// Where the padlock sits in the photo, top to bottom, as a fraction.
+	// Where the knockers sit in the photo, as fractions of its width/height.
+	$wp_customize->add_setting(
+		'm3_hands_x',
+		array(
+			'default'           => 0.075,
+			'sanitize_callback' => 'm3allem_sanitize_fraction',
+		)
+	);
+	$wp_customize->add_control(
+		'm3_hands_x',
+		array(
+			'label'       => 'البعد بين اليدّين',
+			'description' => 'شحال كل يد بعيدة على الوسط. من 0 حتى 0.5.',
+			'section'     => 'm3_gate',
+			'type'        => 'number',
+			'input_attrs' => array( 'min' => 0, 'max' => 0.5, 'step' => 0.005 ),
+		)
+	);
+
 	$wp_customize->add_setting(
 		'm3_lock_y',
 		array(
-			'default'           => 0.655,
+			'default'           => 0.44,
 			'sanitize_callback' => 'm3allem_sanitize_fraction',
 		)
 	);
 	$wp_customize->add_control(
 		'm3_lock_y',
 		array(
-			'label'       => 'بلاصة القفل (من فوق لتحت)',
-			'description' => 'من 0 حتى 1. إلا الدائرة ماجاتش على القفل، بدّل هاد الرقم.',
+			'label'       => 'بلاصة اليدّين (من فوق لتحت)',
+			'description' => 'من 0 حتى 1. إلا الدوائر ماجاوش على اليدّين ديال النحاس، بدّل هاد الرقم.',
 			'section'     => 'm3_gate',
 			'type'        => 'number',
 			'input_attrs' => array(

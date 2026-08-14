@@ -28,13 +28,19 @@ $total = $total ? (int) $total->publish : 0;
 		<p>M3ALLEM</p>
 	</div>
 
-	<button class="lock" id="lock" aria-label="حل الباب">
-		<span class="ring"></span><span class="ring"></span><span class="grab"></span>
+	<?php // Each brass knocker is a door of its own — JS lands them on the photo. ?>
+	<button class="hand" id="hand-client" data-role="client" aria-label="دخل كـكليان">
+		<span class="halo"></span>
+		<span class="tip">أنا <b>كليان</b></span>
+	</button>
+	<button class="hand" id="hand-pro" data-role="pro" aria-label="دخل كـمعلّم">
+		<span class="halo"></span>
+		<span class="tip">أنا <b>معلّم</b></span>
 	</button>
 
 	<div class="hint" id="hint">
-		<b>دقّ على القفل باش يتحل الباب</b>
-		<small>من بعد غادي تدخل وتشوف كل حرفة وبلاصتها</small>
+		<b>دقّ على اليد ديالك باش يتحل الباب</b>
+		<small>وحدة للكليان، ووحدة للمعلّم</small>
 		<div class="arrow"></div>
 	</div>
 </section>
@@ -43,15 +49,32 @@ $total = $total ? (int) $total->publish : 0;
 
 <main id="top">
 
-	<section class="hall" id="tour">
-		<div class="bg"><img src="<?php echo esc_url( $hall ); ?>" alt=""></div>
+	<?php
+	// You are standing at the door looking in: storeys recede in real 3D and
+	// each side of a storey is one craft. JS builds them from the terms above.
+	?>
+	<section class="lobby" id="tour">
+		<div class="stage">
+			<div class="scene" id="scene"></div>
+			<div class="gateframe"></div>
+		</div>
+	</section>
+
+	<div class="hud" id="hud">
+		<div class="lvl" id="hudLvl"></div>
+		<div class="nm" id="hudName"></div>
+		<div class="go"><a class="btn gold" id="hudGo" href="#">شوف المعلّمية ←</a></div>
+	</div>
+
+	<section class="hall" id="intro">
+		<div class="bg"><img src="<?php echo esc_url( $hall ); ?>" alt="" loading="lazy"></div>
 		<div class="in">
-			<span class="eyebrow rv">مرحبا بيك داخل</span>
+			<span class="eyebrow rv">داخل البناية</span>
 			<h2 class="rv d1"><?php echo wp_kses_post( get_theme_mod( 'm3_headline', 'بناية وحدة، <em>وكل طبقة صنعة</em>' ) ); ?></h2>
 			<p class="rv d2"><?php echo esc_html( get_bloginfo( 'description' ) ? get_bloginfo( 'description' ) : 'هنا كتلقى المعلّمية ديال كل حرفة، مرتّبين كل واحد فالزون ديالو. تجول، شوف الخدمة ديالهم، وتواصل معاهم نيشان — بلا وسيط وبلا صداع.' ); ?></p>
 			<div class="cta rv d3">
-				<button class="btn gold" data-nav="z1">بدا الجولة ↓</button>
-				<a class="btn ghost" href="<?php echo esc_url( home_url( '/client/' ) ); ?>">تخطى ودخل</a>
+				<button class="btn gold" data-nav="z1">كمّل الجولة ↓</button>
+				<a class="btn ghost" href="<?php echo esc_url( home_url( '/client/' ) ); ?>">قلّب على معلّم</a>
 			</div>
 			<div class="stats rv d4">
 				<div class="stat"><b><?php echo (int) count( $zones ); ?></b><span>زونات ديال الحرف</span></div>

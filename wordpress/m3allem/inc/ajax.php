@@ -47,12 +47,59 @@ function m3allem_ajax_search() {
 		);
 	}
 
+	$lat    = isset( $_POST['lat'] ) ? (float) $_POST['lat'] : null;
+	$lng    = isset( $_POST['lng'] ) ? (float) $_POST['lng'] : null;
+	$radius = isset( $_POST['radius'] ) ? (float) $_POST['radius'] : 0;
+	$geo    = ( null !== $lat && null !== $lng && ( $lat || $lng ) );
+
+	// With a location we rank by distance, so pull the whole set and sort here.
+	if ( $geo ) {
+		$args['posts_per_page'] = 200;
+	}
+
 	$query = new WP_Query( $args );
 	$out   = array();
+
 	foreach ( $query->posts as $post ) {
-		$out[] = m3allem_card( $post );
+		$card = m3allem_card( $post );
+
+		if ( $geo ) {
+			$plat = (float) get_post_meta( $post->ID, '_m3_lat', true );
+			$plng = (float) get_post_meta( $post->ID, '_m3_lng', true );
+			if ( ! $plat && ! $plng ) {
+				continue; // no coordinates, so it cannot be ranked by distance
+			}
+			$km = m3allem_distance_km( $lat, $lng, $plat, $plng );
+			if ( $radius > 0 && $km > $radius ) {
+				continue;
+			}
+			$card['km'] = round( $km, 2 );
+		}
+
+		$out[] = $card;
 	}
+
+	if ( $geo ) {
+		usort(
+			$out,
+			function ( $a, $b ) {
+				return $a['km'] <=> $b['km'];
+			}
+		);
+		$out = array_slice( $out, 0, 40 );
+	}
+
 	wp_send_json_success( $out );
+}
+
+/** Great-circle distance in kilometres. */
+function m3allem_distance_km( $lat1, $lon1, $lat2, $lon2 ) {
+	$earth = 6371.0088;
+	$dlat  = deg2rad( $lat2 - $lat1 );
+	$dlon  = deg2rad( $lon2 - $lon1 );
+	$a     = sin( $dlat / 2 ) ** 2
+		+ cos( deg2rad( $lat1 ) ) * cos( deg2rad( $lat2 ) ) * sin( $dlon / 2 ) ** 2;
+	return $earth * 2 * asin( min( 1.0, sqrt( $a ) ) );
 }
 
 /** A client publishes an urgent problem. */
@@ -93,63 +140,74 @@ function m3allem_ajax_urgent() {
 	wp_send_json_success( array( 'msg' => 'تنشر! غادي يوصل للمعلّمية القريبين منك ⚡' ) );
 }
 
-/** An artisan registers: a user plus a pending profile an admin reviews. */
+/**
+ * An artisan asks to join. No account and no password: this only files a
+ * pending profile for an admin to review, so signing up costs the artisan
+ * nothing more than their phone number.
+ */
 add_action( 'admin_post_nopriv_m3_signup', 'm3allem_signup' );
 add_action( 'admin_post_m3_signup', 'm3allem_signup' );
 function m3allem_signup() {
 	check_admin_referer( 'm3_signup' );
 
 	$name  = isset( $_POST['name'] ) ? sanitize_text_field( wp_unslash( $_POST['name'] ) ) : '';
-	$email = isset( $_POST['email'] ) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : '';
 	$tel   = isset( $_POST['tel'] ) ? sanitize_text_field( wp_unslash( $_POST['tel'] ) ) : '';
 	$city  = isset( $_POST['city'] ) ? sanitize_text_field( wp_unslash( $_POST['city'] ) ) : '';
 	$craft = isset( $_POST['craft'] ) ? sanitize_key( $_POST['craft'] ) : '';
-	$pass  = isset( $_POST['pass'] ) ? (string) wp_unslash( $_POST['pass'] ) : '';
+	$bio   = isset( $_POST['bio'] ) ? sanitize_textarea_field( wp_unslash( $_POST['bio'] ) ) : '';
+	$lat   = isset( $_POST['lat'] ) ? (float) $_POST['lat'] : 0;
+	$lng   = isset( $_POST['lng'] ) ? (float) $_POST['lng'] : 0;
 
-	$back = wp_get_referer() ? wp_get_referer() : home_url( '/' );
+	$back = home_url( '/pro/' );
 
-	if ( ! $name || ! is_email( $email ) || ! $tel || strlen( $pass ) < 6 ) {
+	if ( ! $name || ! $tel || ! $craft ) {
 		wp_safe_redirect( add_query_arg( 'm3', 'bad', $back ) );
 		exit;
 	}
-	if ( email_exists( $email ) ) {
-		wp_safe_redirect( add_query_arg( 'm3', 'dup', $back ) );
-		exit;
-	}
 
-	$user_id = wp_insert_user(
+	// Same phone already waiting or listed? Don't file it twice.
+	$dupe = get_posts(
 		array(
-			'user_login'   => $email,
-			'user_email'   => $email,
-			'user_pass'    => $pass,
-			'display_name' => $name,
-			'role'         => 'm3allem_pro',
+			'post_type'      => 'm3allem',
+			'post_status'    => array( 'publish', 'pending', 'draft' ),
+			'posts_per_page' => 1,
+			'fields'         => 'ids',
+			'meta_query'     => array(
+				array(
+					'key'   => '_m3_phone',
+					'value' => $tel,
+				),
+			),
 		)
 	);
-	if ( is_wp_error( $user_id ) ) {
-		wp_safe_redirect( add_query_arg( 'm3', 'bad', $back ) );
+	if ( $dupe ) {
+		wp_safe_redirect( add_query_arg( 'm3', 'dup', $back ) );
 		exit;
 	}
 
 	$post_id = wp_insert_post(
 		array(
-			'post_type'   => 'm3allem',
-			'post_status' => 'pending',
-			'post_title'  => $name,
-			'post_author' => $user_id,
-		)
+			'post_type'    => 'm3allem',
+			'post_status'  => 'pending',
+			'post_title'   => $name,
+			'post_content' => $bio,
+		),
+		true
 	);
-	if ( ! is_wp_error( $post_id ) ) {
-		update_post_meta( $post_id, '_m3_phone', $tel );
-		update_post_meta( $post_id, '_m3_city', $city );
-		if ( $craft ) {
-			wp_set_object_terms( $post_id, $craft, 'hirfa' );
-		}
+	if ( is_wp_error( $post_id ) ) {
+		wp_safe_redirect( add_query_arg( 'm3', 'bad', $back ) );
+		exit;
 	}
 
-	wp_set_current_user( $user_id );
-	wp_set_auth_cookie( $user_id );
-	wp_safe_redirect( home_url( '/pro/' ) );
+	update_post_meta( $post_id, '_m3_phone', $tel );
+	update_post_meta( $post_id, '_m3_city', $city );
+	if ( $lat && $lng ) {
+		update_post_meta( $post_id, '_m3_lat', $lat );
+		update_post_meta( $post_id, '_m3_lng', $lng );
+	}
+	wp_set_object_terms( $post_id, $craft, 'hirfa' );
+
+	wp_safe_redirect( add_query_arg( 'm3', 'thanks', $back ) );
 	exit;
 }
 
