@@ -69,6 +69,50 @@ function m3allem_customize( $wp_customize ) {
 	);
 }
 
+add_action( 'customize_register', 'm3allem_customize_app' );
+function m3allem_customize_app( $wp_customize ) {
+
+	$wp_customize->add_section(
+		'm3_app',
+		array(
+			'title'       => 'الأبليكاسيون (PWA)',
+			'priority'    => 21,
+			'description' => 'هاد الإعدادات كيتحكمو فاش الموقع كيتزاد فالتيليفون، وفـالـAPK ديال أندرويد.',
+		)
+	);
+
+	$wp_customize->add_setting(
+		'm3_app_short_name',
+		array(
+			'default'           => 'المعلّم',
+			'sanitize_callback' => 'sanitize_text_field',
+		)
+	);
+	$wp_customize->add_control(
+		'm3_app_short_name',
+		array(
+			'label'       => 'السمية القصيرة',
+			'description' => 'لي كتبان تحت الأيقونة فالتيليفون. خليها قصيرة.',
+			'section'     => 'm3_app',
+			'type'        => 'text',
+		)
+	);
+
+	$wp_customize->add_setting( 'm3_app_icon', array( 'sanitize_callback' => 'absint' ) );
+	$wp_customize->add_control(
+		new WP_Customize_Media_Control(
+			$wp_customize,
+			'm3_app_icon',
+			array(
+				'label'       => 'الأيقونة ديال الأبليكاسيون',
+				'description' => 'مربّعة 512×512 على الأقل. خلي الرسم فالوسط حيت أندرويد كيقص الأطراف.',
+				'section'     => 'm3_app',
+				'mime_type'   => 'image',
+			)
+		)
+	);
+}
+
 function m3allem_sanitize_fraction( $value ) {
 	$value = (float) $value;
 	return max( 0, min( 1, $value ) );

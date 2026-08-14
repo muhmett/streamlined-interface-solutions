@@ -413,3 +413,4 @@ function m3allem_card( $post ) {
 require_once get_template_directory() . '/inc/meta-boxes.php';
 require_once get_template_directory() . '/inc/ajax.php';
 require_once get_template_directory() . '/inc/customizer.php';
+require_once get_template_directory() . '/inc/pwa.php';
