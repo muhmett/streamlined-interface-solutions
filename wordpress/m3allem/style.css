@@ -363,7 +363,7 @@ footer{padding:40px 20px 60px;text-align:center;opacity:.42;font-size:13px;borde
 @media(max-width:520px){.hand{width:92px;height:92px}.hand .tip{font-size:12.5px;padding:6px 12px;margin-top:8px}}
 
 /* ================= الداخل: بناية 3D ================= */
-.lobby{position:relative;background:var(--ink)}
+.lobby{position:relative;min-height:300svh;background:var(--ink)}
 .stage{position:sticky;top:0;height:100svh;overflow:hidden;
   perspective:760px;perspective-origin:50% 47%;
   background:radial-gradient(120% 90% at 50% 44%,#4a3616 0%,#1d1409 46%,#0a0a0e 100%)}
@@ -380,13 +380,27 @@ footer{padding:40px 20px 60px;text-align:center;opacity:.42;font-size:13px;borde
   background:linear-gradient(90deg,transparent,rgba(247,201,72,.55),transparent)}
 
 /* the two craft bays: angled like walls, but still facing you enough to read */
-.bay{position:absolute;top:15%;bottom:15%;width:31%;overflow:hidden;border-radius:10px;
-  border:1px solid rgba(247,201,72,.4);background:#1a1209;
-  box-shadow:0 26px 60px rgba(0,0,0,.75),inset 0 0 60px rgba(0,0,0,.7);
+.bay{--h:40;position:absolute;top:15%;bottom:15%;width:31%;overflow:hidden;border-radius:10px;
+  border:1px solid rgba(247,201,72,.42);
+  background:
+    radial-gradient(125% 82% at 50% 10%,hsl(var(--h) 58% 30%),hsl(var(--h) 62% 13%) 58%,hsl(var(--h) 58% 7%));
+  box-shadow:0 26px 60px rgba(0,0,0,.75),inset 0 0 60px rgba(0,0,0,.55);
   transition:border-color .4s ease}
+/* a woven zellige lattice, drawn with gradients so it needs no image */
+.bay .tex{position:absolute;inset:0;opacity:.55;
+  background-image:
+    repeating-linear-gradient(45deg,hsl(var(--h) 50% 52% / .16) 0 2px,transparent 2px 17px),
+    repeating-linear-gradient(-45deg,hsl(var(--h) 50% 52% / .16) 0 2px,transparent 2px 17px),
+    radial-gradient(circle at 50% 50%,hsl(var(--h) 55% 55% / .12) 0 3px,transparent 4px);
+  background-size:34px 34px,34px 34px,34px 34px}
+/* the carved maâlem standing in his zone */
+.bay .art{position:absolute;left:0;right:0;bottom:19%;top:8%;display:grid;place-items:end center;
+  pointer-events:none}
+.bay .art svg{width:58%;height:auto;max-height:100%;
+  filter:drop-shadow(0 14px 26px rgba(0,0,0,.75))}
 .bay.l{left:1%;transform-origin:left center;transform:rotateY(31deg)}
 .bay.r{right:1%;transform-origin:right center;transform:rotateY(-31deg)}
-.bay img{width:100%;height:100%;object-fit:cover;opacity:.82;
+.bay img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.78;
   transition:opacity .5s ease,transform 5s var(--ease)}
 .bay .shade{position:absolute;inset:0;
   background:linear-gradient(180deg,rgba(0,0,0,.08) 30%,rgba(0,0,0,.82))}
@@ -442,3 +456,29 @@ footer{padding:40px 20px 60px;text-align:center;opacity:.42;font-size:13px;borde
 .geo.on{border-color:rgba(110,231,168,.45);background:rgba(110,231,168,.07)}
 .dist{font-size:12.5px;color:var(--gold);margin-top:8px;font-weight:700}
 .dist.far{color:rgba(255,255,255,.5);font-weight:400}
+
+
+/* ================= الحرفي المنقوش فالجولة ================= */
+.zone{--h:40}
+.zone .pic{background:
+  radial-gradient(120% 90% at 70% 10%,hsl(var(--h) 55% 26%),hsl(var(--h) 60% 10%) 62%,#0b0b0c)}
+.zone .weave{position:absolute;inset:0;z-index:0;opacity:.5;
+  background-image:
+    repeating-linear-gradient(45deg,hsl(var(--h) 50% 52% / .14) 0 2px,transparent 2px 19px),
+    repeating-linear-gradient(-45deg,hsl(var(--h) 50% 52% / .14) 0 2px,transparent 2px 19px);
+  background-size:38px 38px}
+.zone .maalem{position:absolute;z-index:2;inset-inline-end:5%;bottom:4%;top:14%;
+  display:grid;place-items:end center;pointer-events:none;
+  opacity:0;transform:translateY(40px);transition:opacity 1s var(--ease),transform 1s var(--ease)}
+.zone .maalem.in{opacity:1;transform:none}
+.zone .maalem svg{height:66%;width:auto;filter:drop-shadow(0 18px 40px rgba(0,0,0,.8))}
+@media(max-width:900px){
+  .zone .maalem{inset-inline-end:2%;top:8%;opacity:.28}
+  .zone .maalem.in{opacity:.3}
+  .zone .maalem svg{height:60%}
+}
+
+/* the emblem watermark behind a zone's copy */
+.zone .emblem{position:absolute;z-index:1;inset-inline-start:2%;top:14%;width:min(38vw,340px);
+  color:hsl(var(--h) 60% 60%);opacity:.09;pointer-events:none}
+.zone .emblem svg{width:100%;height:auto}

@@ -86,13 +86,17 @@ $total = $total ? (int) $total->publish : 0;
 
 	<div id="zones">
 	<?php foreach ( $zones as $i => $z ) : ?>
-		<section class="zone" id="z<?php echo (int) ( $i + 1 ); ?>" data-zone="<?php echo esc_attr( $z['id'] ); ?>">
+		<section class="zone" id="z<?php echo (int) ( $i + 1 ); ?>" data-zone="<?php echo esc_attr( $z['id'] ); ?>"
+			style="--h:<?php echo (int) $z['hue']; ?>">
 			<div class="pic">
 				<?php if ( $z['img'] ) : ?>
 					<img src="<?php echo esc_url( $z['img'] ); ?>" alt="<?php echo esc_attr( $z['n'] ); ?>" loading="lazy">
 				<?php endif; ?>
 			</div>
+			<div class="weave"></div>
+			<div class="emblem"><?php echo m3allem_emblem( $z['id'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></div>
 			<div class="veil"></div><div class="veil2"></div>
+			<div class="maalem rv"><?php echo m3allem_figure( $z['id'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></div>
 			<div class="body">
 				<div class="znum rv">زون <?php echo esc_html( str_pad( $i + 1, 2, '0', STR_PAD_LEFT ) ); ?> / <?php echo esc_html( str_pad( count( $zones ), 2, '0', STR_PAD_LEFT ) ); ?></div>
 				<h3 class="rv d1"><?php echo esc_html( $z['n'] ); ?></h3>

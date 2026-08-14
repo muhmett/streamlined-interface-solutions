@@ -178,9 +178,12 @@
         pair
           .map(function (z, k) {
             return (
-              '<a class="bay ' + (k === 0 ? "r" : "l") + '" href="' + z.link + '">' +
-              '<span class="lamp"></span>' +
+              '<a class="bay ' + (k === 0 ? "r" : "l") + '" href="' + z.link +
+              '" style="--h:' + (z.hue != null ? z.hue : 40) + '">' +
+              '<span class="tex"></span>' +
               (z.img ? '<img src="' + z.img + '" alt="" loading="lazy">' : "") +
+              '<span class="art">' + (z.figure || "") + "</span>" +
+              '<span class="lamp"></span>' +
               '<span class="shade"></span>' +
               '<span class="tagline"><b>' + z.n + "</b><span>" + z.pros + " معلّم</span></span>" +
               "</a>"

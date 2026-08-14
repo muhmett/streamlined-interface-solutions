@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'M3ALLEM_VERSION', '1.0.0' );
+define( 'M3ALLEM_VERSION', '1.1.0' );
 
 /** Craft slugs are used by the walkthrough, so keep them stable. */
 function m3allem_default_crafts() {
@@ -323,14 +323,18 @@ function m3allem_zones_payload() {
 		$tags   = (string) get_term_meta( $term->term_id, '_m3_tags', true );
 
 		$zones[] = array(
-			'id'    => $term->slug,
-			'n'     => $term->name,
-			'd'     => $term->description,
-			'img'   => $img,
-			'tags'  => array_values( array_filter( array_map( 'trim', explode( ',', $tags ) ) ) ),
-			'pros'  => (int) $term->count,
-			'rate'  => m3allem_term_rating( $term->term_id ),
-			'link'  => get_term_link( $term ),
+			'id'     => $term->slug,
+			'n'      => $term->name,
+			'd'      => $term->description,
+			'img'    => $img,
+			'tags'   => array_values( array_filter( array_map( 'trim', explode( ',', $tags ) ) ) ),
+			'pros'   => (int) $term->count,
+			'rate'   => m3allem_term_rating( $term->term_id ),
+			'link'   => get_term_link( $term ),
+			// Drawn in the theme, so a zone is never empty for want of a photo.
+			'hue'    => m3allem_hue( $term->slug ),
+			'figure' => m3allem_figure( $term->slug ),
+			'emblem' => m3allem_emblem( $term->slug ),
 		);
 	}
 	return $zones;
@@ -411,6 +415,7 @@ function m3allem_card( $post ) {
 	);
 }
 
+require_once get_template_directory() . '/inc/emblems.php';
 require_once get_template_directory() . '/inc/meta-boxes.php';
 require_once get_template_directory() . '/inc/ajax.php';
 require_once get_template_directory() . '/inc/customizer.php';
