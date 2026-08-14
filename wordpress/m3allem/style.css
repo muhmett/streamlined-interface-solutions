@@ -402,6 +402,9 @@ footer{padding:40px 20px 60px;text-align:center;opacity:.42;font-size:13px;borde
 .bay.r{right:1%;transform-origin:right center;transform:rotateY(-31deg)}
 .bay img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.78;
   transition:opacity .5s ease,transform 5s var(--ease)}
+/* keeps the photo from swallowing the carved figure standing in front of it */
+.bay .scrim{position:absolute;inset:0;
+  background:linear-gradient(180deg,hsl(var(--h) 55% 8% / .55),hsl(var(--h) 60% 5% / .82))}
 .bay .shade{position:absolute;inset:0;
   background:linear-gradient(180deg,rgba(0,0,0,.08) 30%,rgba(0,0,0,.82))}
 .bay .tagline{position:absolute;inset:auto 0 0 0;padding:18px 14px;text-align:center}

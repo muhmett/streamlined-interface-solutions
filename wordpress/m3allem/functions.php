@@ -320,7 +320,10 @@ function m3allem_zones_payload() {
 	foreach ( $terms as $term ) {
 		$img_id = (int) get_term_meta( $term->term_id, '_m3_image', true );
 		$img    = $img_id ? wp_get_attachment_image_url( $img_id, 'm3allem-zone' ) : '';
-		$tags   = (string) get_term_meta( $term->term_id, '_m3_tags', true );
+		if ( ! $img ) {
+			$img = m3allem_fallback_zone_image( $term->slug );
+		}
+		$tags = (string) get_term_meta( $term->term_id, '_m3_tags', true );
 
 		$zones[] = array(
 			'id'     => $term->slug,
@@ -397,6 +400,9 @@ function m3allem_card( $post ) {
 	if ( ! $thumb && $term ) {
 		$img_id = (int) get_term_meta( $term->term_id, '_m3_image', true );
 		$thumb  = $img_id ? wp_get_attachment_image_url( $img_id, 'medium' ) : '';
+		if ( ! $thumb ) {
+			$thumb = m3allem_fallback_zone_image( $term->slug );
+		}
 	}
 
 	return array(

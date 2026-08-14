@@ -25,6 +25,26 @@ function m3allem_hues() {
 	);
 }
 
+/**
+ * Starter photo per craft — a real artisan at work, so the zones are furnished
+ * on day one. Uploading a zone image in the admin overrides these.
+ */
+function m3allem_fallback_zone_image( $slug ) {
+	$base = 'https://d8j0ntlcm91z4.cloudfront.net/user_38Z6iQ5SZ4Zbbv4qoOMfcP3gcAd/hf_20260814_';
+	$map  = array(
+		'plumb' => '125207_c8aad9e1-c5d0-42ed-bf4a-322c432fe604',
+		'elec'  => '125207_8385ef96-2667-4f5e-ae4e-a67bf57c60ff',
+		'wood'  => '125207_96abb335-26af-4e15-868c-7e486ea5de51',
+		'paint' => '125207_0f493f3d-5005-4537-97d8-4e9894b37092',
+		'tile'  => '125207_2526b5db-e5cd-4675-8103-a41174841cf2',
+		'cool'  => '125207_6fea33a7-4b94-4b06-9724-1d42a08e45dd',
+		'metal' => '125207_f9d5e995-ab94-4e56-8a38-20c299add0e4',
+		'lock'  => '172328_6c28d64e-130e-411d-95be-62507630dcda',
+		'clean' => '125207_77976da4-c0d8-49bf-b254-dcec8300b494',
+	);
+	return isset( $map[ $slug ] ) ? $base . $map[ $slug ] . '.png' : '';
+}
+
 function m3allem_hue( $slug ) {
 	$hues = m3allem_hues();
 	if ( isset( $hues[ $slug ] ) ) {
