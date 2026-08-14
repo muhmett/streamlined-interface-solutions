@@ -45,7 +45,7 @@ a{color:inherit;text-decoration:none}
 
 .leaf{position:absolute;top:0;bottom:0;width:50.4%;overflow:hidden;backface-visibility:hidden;
   transition:transform 2.5s var(--ease);will-change:transform;box-shadow:0 0 90px rgba(0,0,0,.9)}
-.leaf .tex{position:absolute;top:0;height:100%;width:198.4%;background:url("https://d8j0ntlcm91z4.cloudfront.net/user_38Z6iQ5SZ4Zbbv4qoOMfcP3gcAd/hf_20260814_125208_e33dcd54-174c-43ac-b092-1b6d038584f0.png") center/cover no-repeat}
+.leaf .tex{position:absolute;top:0;height:100%;width:198.4%;background-position:center;background-size:cover;background-repeat:no-repeat}
 .leaf::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity 2.2s var(--ease)}
 .leaf.l{left:0;transform-origin:left center}
 .leaf.l .tex{left:0}
@@ -304,7 +304,7 @@ footer{padding:40px 20px 60px;text-align:center;opacity:.42;font-size:13px;borde
 
 <!-- ============ ACT 1 : الباب ============ -->
 <section id="gate" aria-label="باب الدخول">
-  <div class="behind"><img src="https://d8j0ntlcm91z4.cloudfront.net/user_38Z6iQ5SZ4Zbbv4qoOMfcP3gcAd/hf_20260814_125207_8cef3fed-40b3-4776-adb2-a58552c6235f.png" alt=""></div>
+  <div class="behind"><img src="@125207_8cef3fed-40b3-4776-adb2-a58552c6235f" alt=""></div>
   <div class="glow"></div>
   <div class="dust" id="dust"></div>
 
@@ -344,7 +344,7 @@ footer{padding:40px 20px 60px;text-align:center;opacity:.42;font-size:13px;borde
 
   <!-- الصالة -->
   <section class="hall" id="tour">
-    <div class="bg"><img src="https://d8j0ntlcm91z4.cloudfront.net/user_38Z6iQ5SZ4Zbbv4qoOMfcP3gcAd/hf_20260814_125207_8cef3fed-40b3-4776-adb2-a58552c6235f.png" alt=""></div>
+    <div class="bg"><img src="@125207_8cef3fed-40b3-4776-adb2-a58552c6235f" alt=""></div>
     <div class="in">
       <span class="eyebrow rv">مرحبا بيك داخل</span>
       <h2 class="rv d1">بناية وحدة، <em>وكل طبقة صنعة</em></h2>
@@ -478,42 +478,52 @@ footer{padding:40px 20px 60px;text-align:center;opacity:.42;font-size:13px;borde
 <div class="toast" id="toast"></div>
 
 <script>
+/* ================= الصور ================= */
+/* Every image is stored as a short "@id" key and expanded here, so the page
+   carries one copy of the host instead of eighteen. */
+const CDN="https://d8j0ntlcm91z4.cloudfront.net/user_38Z6iQ5SZ4Zbbv4qoOMfcP3gcAd/hf_20260814_";
+const url=k=>CDN+k.slice(1)+".png";
+const DOOR_IMG="@125208_e33dcd54-174c-43ac-b092-1b6d038584f0";
+document.querySelectorAll('img[src^="@"]').forEach(im=>im.src=url(im.getAttribute("src")));
+document.querySelectorAll(".leaf .tex").forEach(t=>t.style.backgroundImage='url("'+url(DOOR_IMG)+'")');
+
 /* ================= البيانات ================= */
 const ZONES = [
-  {id:"plumb", n:"الماء والصحي",     img:"https://d8j0ntlcm91z4.cloudfront.net/user_38Z6iQ5SZ4Zbbv4qoOMfcP3gcAd/hf_20260814_125207_c8aad9e1-c5d0-42ed-bf4a-322c432fe604.png", d:"تسربة، شوفاج، روبيني، صانيطير — كلشي لي عندو علاقة بالما.", tags:["تسربة الما","روبيني","شوفاج","صانيطير"], pros:214, rate:4.8},
-  {id:"elec",  n:"الضو والكهرباء",   img:"https://d8j0ntlcm91z4.cloudfront.net/user_38Z6iQ5SZ4Zbbv4qoOMfcP3gcAd/hf_20260814_125207_8385ef96-2667-4f5e-ae4e-a67bf57c60ff.png",  d:"كومبتور، تابلو، بريز، لومير، وكل شي كهربائي فالدار.", tags:["تابلو","بريز","لومير","كومبتور"], pros:186, rate:4.9},
-  {id:"wood",  n:"الخشب والنجارة",   img:"https://d8j0ntlcm91z4.cloudfront.net/user_38Z6iQ5SZ4Zbbv4qoOMfcP3gcAd/hf_20260814_125207_96abb335-26af-4e15-868c-7e486ea5de51.png",  d:"بيبان، كوزينة، بلاكار، وخدمة الخشب على المقاس.", tags:["بيبان","كوزينة","بلاكار","صيانة"], pros:143, rate:4.7},
-  {id:"paint", n:"الصباغة والديكور", img:"https://d8j0ntlcm91z4.cloudfront.net/user_38Z6iQ5SZ4Zbbv4qoOMfcP3gcAd/hf_20260814_125207_0f493f3d-5005-4537-97d8-4e9894b37092.png", d:"صباغة، تادلاكت، جبس، وديكور يبدّل الدار كاملة.", tags:["صباغة","تادلاكت","جبس","ديكور"], pros:167, rate:4.8},
-  {id:"tile",  n:"البناء والزليج",   img:"https://d8j0ntlcm91z4.cloudfront.net/user_38Z6iQ5SZ4Zbbv4qoOMfcP3gcAd/hf_20260814_125207_2526b5db-e5cd-4675-8103-a41174841cf2.png",  d:"زليج، كارو، بناء، وترميم بجودة ديال المعلّمية.", tags:["زليج","كارو","بناء","ترميم"], pros:129, rate:4.6},
-  {id:"cool",  n:"التبريد والكليما", img:"https://d8j0ntlcm91z4.cloudfront.net/user_38Z6iQ5SZ4Zbbv4qoOMfcP3gcAd/hf_20260814_125207_6fea33a7-4b94-4b06-9724-1d42a08e45dd.png",  d:"كليماتيزور، تلاجة، كونجيلاتور — تركيب وإصلاح.", tags:["كليما","تلاجة","تركيب","شحن الغاز"], pros:98, rate:4.8},
-  {id:"metal", n:"الحديد والسودور",  img:"https://d8j0ntlcm91z4.cloudfront.net/user_38Z6iQ5SZ4Zbbv4qoOMfcP3gcAd/hf_20260814_125207_f9d5e995-ab94-4e56-8a38-20c299add0e4.png", d:"بيبان الحديد، شبابك، حماية، وخدمة السودور.", tags:["سودور","بيبان حديد","شبابك","حماية"], pros:87, rate:4.7},
-  {id:"lock",  n:"البيبان والأمان",  img:"https://d8j0ntlcm91z4.cloudfront.net/user_38Z6iQ5SZ4Zbbv4qoOMfcP3gcAd/hf_20260814_172328_6c28d64e-130e-411d-95be-62507630dcda.png",  d:"سرارة، مفاتيح، بيبان مدرعة، وأنظمة الأمان.", tags:["سرارة","مفاتيح","باب مدرع","كاميرا"], pros:64, rate:4.9},
-  {id:"clean", n:"التنظيف والدار",   img:"https://d8j0ntlcm91z4.cloudfront.net/user_38Z6iQ5SZ4Zbbv4qoOMfcP3gcAd/hf_20260814_125207_77976da4-c0d8-49bf-b254-dcec8300b494.png", d:"تنظيف عميق، سالون، طابي، وخدمة الدار.", tags:["تنظيف عميق","سالون","طابي","زربية"], pros:152, rate:4.8}
+  {id:"plumb", n:"الماء والصحي",     img:"@125207_c8aad9e1-c5d0-42ed-bf4a-322c432fe604", d:"تسربة، شوفاج، روبيني، صانيطير — كلشي لي عندو علاقة بالما.", tags:["تسربة الما","روبيني","شوفاج","صانيطير"], pros:214, rate:4.8},
+  {id:"elec",  n:"الضو والكهرباء",   img:"@125207_8385ef96-2667-4f5e-ae4e-a67bf57c60ff",  d:"كومبتور، تابلو، بريز، لومير، وكل شي كهربائي فالدار.", tags:["تابلو","بريز","لومير","كومبتور"], pros:186, rate:4.9},
+  {id:"wood",  n:"الخشب والنجارة",   img:"@125207_96abb335-26af-4e15-868c-7e486ea5de51",  d:"بيبان، كوزينة، بلاكار، وخدمة الخشب على المقاس.", tags:["بيبان","كوزينة","بلاكار","صيانة"], pros:143, rate:4.7},
+  {id:"paint", n:"الصباغة والديكور", img:"@125207_0f493f3d-5005-4537-97d8-4e9894b37092", d:"صباغة، تادلاكت، جبس، وديكور يبدّل الدار كاملة.", tags:["صباغة","تادلاكت","جبس","ديكور"], pros:167, rate:4.8},
+  {id:"tile",  n:"البناء والزليج",   img:"@125207_2526b5db-e5cd-4675-8103-a41174841cf2",  d:"زليج، كارو، بناء، وترميم بجودة ديال المعلّمية.", tags:["زليج","كارو","بناء","ترميم"], pros:129, rate:4.6},
+  {id:"cool",  n:"التبريد والكليما", img:"@125207_6fea33a7-4b94-4b06-9724-1d42a08e45dd",  d:"كليماتيزور، تلاجة، كونجيلاتور — تركيب وإصلاح.", tags:["كليما","تلاجة","تركيب","شحن الغاز"], pros:98, rate:4.8},
+  {id:"metal", n:"الحديد والسودور",  img:"@125207_f9d5e995-ab94-4e56-8a38-20c299add0e4", d:"بيبان الحديد، شبابك، حماية، وخدمة السودور.", tags:["سودور","بيبان حديد","شبابك","حماية"], pros:87, rate:4.7},
+  {id:"lock",  n:"البيبان والأمان",  img:"@172328_6c28d64e-130e-411d-95be-62507630dcda",  d:"سرارة، مفاتيح، بيبان مدرعة، وأنظمة الأمان.", tags:["سرارة","مفاتيح","باب مدرع","كاميرا"], pros:64, rate:4.9},
+  {id:"clean", n:"التنظيف والدار",   img:"@125207_77976da4-c0d8-49bf-b254-dcec8300b494", d:"تنظيف عميق، سالون، طابي، وخدمة الدار.", tags:["تنظيف عميق","سالون","طابي","زربية"], pros:152, rate:4.8}
 ];
 
+/* [name, craft, city, rating, reviews, km, verified, phone] */
 const PROS = [
-  {n:"محمد العلوي", c:"elec",  city:"الدار البيضاء", r:4.9, k:94, km:1.2, v:1, t:"0661234567"},
-  {n:"يوسف بنعلي", c:"plumb", city:"الدار البيضاء", r:4.8, k:76, km:2.4, v:1, t:"0662345678"},
-  {n:"عبد الرحيم", c:"wood",  city:"الرباط",       r:4.7, k:58, km:3.1, v:0, t:"0663456789"},
-  {n:"سعيد الفاسي", c:"paint", city:"فاس",          r:4.9, k:112,km:1.8, v:1, t:"0664567890"},
-  {n:"كريم الصقلي", c:"tile",  city:"مراكش",        r:4.6, k:44, km:4.5, v:0, t:"0665678901"},
-  {n:"حميد التازي", c:"cool",  city:"الدار البيضاء", r:4.8, k:67, km:2.9, v:1, t:"0666789012"},
-  {n:"مصطفى بركة", c:"metal", city:"طنجة",         r:4.7, k:39, km:5.2, v:0, t:"0667890123"},
-  {n:"رشيد المرابط", c:"lock",  city:"الرباط",       r:4.9, k:81, km:1.5, v:1, t:"0668901234"},
-  {n:"نادية الحسني", c:"clean", city:"الدار البيضاء", r:4.9, k:134,km:0.9, v:1, t:"0669012345"},
-  {n:"إبراهيم أيت", c:"elec",  city:"أكادير",       r:4.6, k:52, km:6.1, v:0, t:"0660123456"},
-  {n:"خالد بوعزة", c:"plumb", city:"مراكش",        r:4.8, k:71, km:3.7, v:1, t:"0661112233"},
-  {n:"سمير الودغيري",c:"paint", city:"طنجة",         r:4.7, k:63, km:4.9, v:0, t:"0662223344"},
-  {n:"عثمان الشرقاوي",c:"wood", city:"الدار البيضاء", r:4.8, k:69, km:2.1, v:1, t:"0663334455"},
-  {n:"منير الإدريسي", c:"wood",  city:"مراكش",        r:4.6, k:41, km:4.2, v:0, t:"0664445566"},
-  {n:"جمال الركراكي", c:"tile",  city:"الدار البيضاء", r:4.8, k:88, km:1.7, v:1, t:"0665556677"},
-  {n:"الطيب أمزيل",  c:"metal", city:"الدار البيضاء", r:4.8, k:57, km:2.6, v:1, t:"0666667788"},
-  {n:"فؤاد بلحاج",   c:"cool",  city:"الرباط",       r:4.7, k:49, km:3.4, v:0, t:"0667778899"},
-  {n:"ياسين الحمداوي",c:"lock",  city:"الدار البيضاء", r:4.7, k:46, km:2.2, v:0, t:"0668889900"},
-  {n:"سناء بنعمر",   c:"clean", city:"الرباط",       r:4.8, k:97, km:3.0, v:1, t:"0669990011"},
-  {n:"حسن الزروالي", c:"elec",  city:"مراكش",        r:4.7, k:73, km:3.9, v:1, t:"0661010101"},
-  {n:"عادل السباعي", c:"plumb", city:"فاس",          r:4.7, k:55, km:5.5, v:0, t:"0662020202"}
-];
+["محمد العلوي","elec","الدار البيضاء",4.9,94,1.2,1,"0661234567"],
+["يوسف بنعلي","plumb","الدار البيضاء",4.8,76,2.4,1,"0662345678"],
+["عبد الرحيم","wood","الرباط",4.7,58,3.1,0,"0663456789"],
+["سعيد الفاسي","paint","فاس",4.9,112,1.8,1,"0664567890"],
+["كريم الصقلي","tile","مراكش",4.6,44,4.5,0,"0665678901"],
+["حميد التازي","cool","الدار البيضاء",4.8,67,2.9,1,"0666789012"],
+["مصطفى بركة","metal","طنجة",4.7,39,5.2,0,"0667890123"],
+["رشيد المرابط","lock","الرباط",4.9,81,1.5,1,"0668901234"],
+["نادية الحسني","clean","الدار البيضاء",4.9,134,0.9,1,"0669012345"],
+["إبراهيم أيت","elec","أكادير",4.6,52,6.1,0,"0660123456"],
+["خالد بوعزة","plumb","مراكش",4.8,71,3.7,1,"0661112233"],
+["سمير الودغيري","paint","طنجة",4.7,63,4.9,0,"0662223344"],
+["عثمان الشرقاوي","wood","الدار البيضاء",4.8,69,2.1,1,"0663334455"],
+["منير الإدريسي","wood","مراكش",4.6,41,4.2,0,"0664445566"],
+["جمال الركراكي","tile","الدار البيضاء",4.8,88,1.7,1,"0665556677"],
+["الطيب أمزيل","metal","الدار البيضاء",4.8,57,2.6,1,"0666667788"],
+["فؤاد بلحاج","cool","الرباط",4.7,49,3.4,0,"0667778899"],
+["ياسين الحمداوي","lock","الدار البيضاء",4.7,46,2.2,0,"0668889900"],
+["سناء بنعمر","clean","الرباط",4.8,97,3.0,1,"0669990011"],
+["حسن الزروالي","elec","مراكش",4.7,73,3.9,1,"0661010101"],
+["عادل السباعي","plumb","فاس",4.7,55,5.5,0,"0662020202"]
+].map(([n,c,city,r,k,km,v,t])=>({n,c,city,r,k,km,v,t}));
 
 const CJOBS = [
   {t:"إصلاح تسربة الما — الكوزينة", s:"يوسف بنعلي · 12 غشت", b:"تكمّل", k:"b-ok"},
@@ -577,7 +587,7 @@ ZONES.forEach((z,i)=>{
   const s=document.createElement("section");
   s.className="zone"; s.id="z"+(i+1); s.dataset.zone=z.id;
   s.innerHTML=`
-    <div class="pic"><img src="${z.img}" alt="${z.n}" loading="lazy"></div>
+    <div class="pic"><img src="${url(z.img)}" alt="${z.n}" loading="lazy"></div>
     <div class="veil"></div><div class="veil2"></div>
     <div class="body">
       <div class="znum rv">زون ${String(i+1).padStart(2,"0")} / 09</div>
@@ -687,7 +697,7 @@ function render(){
     const z=ZONES.find(z=>z.id===p.c);
     return `<article class="card">
       <div class="pro">
-        <div class="av" style="background-image:url('${z.img}')"></div>
+        <div class="av" style="background-image:url('${url(z.img)}')"></div>
         <div style="flex:1;min-width:0">
           <div class="nm">${p.n} ${p.v?'<span class="vf" title="موثّق">✓</span>':''}</div>
           <div class="cr">${z.n} · ${p.city}</div>
@@ -740,10 +750,10 @@ const chartIO=new IntersectionObserver(es=>es.forEach(e=>{
 chartIO.observe(chart);
 
 const folio=document.getElementById("folio");
-const FOLIO=[["https://d8j0ntlcm91z4.cloudfront.net/user_38Z6iQ5SZ4Zbbv4qoOMfcP3gcAd/hf_20260814_125207_8385ef96-2667-4f5e-ae4e-a67bf57c60ff.png","تابلو جديد — المعاريف"],["https://d8j0ntlcm91z4.cloudfront.net/user_38Z6iQ5SZ4Zbbv4qoOMfcP3gcAd/hf_20260814_125207_c8aad9e1-c5d0-42ed-bf4a-322c432fe604.png","تركيب صانيطير"],
-  ["https://d8j0ntlcm91z4.cloudfront.net/user_38Z6iQ5SZ4Zbbv4qoOMfcP3gcAd/hf_20260814_125207_96abb335-26af-4e15-868c-7e486ea5de51.png","بلاكار على المقاس"],["https://d8j0ntlcm91z4.cloudfront.net/user_38Z6iQ5SZ4Zbbv4qoOMfcP3gcAd/hf_20260814_125207_0f493f3d-5005-4537-97d8-4e9894b37092.png","تادلاكت ديال السالون"],
-  ["https://d8j0ntlcm91z4.cloudfront.net/user_38Z6iQ5SZ4Zbbv4qoOMfcP3gcAd/hf_20260814_125207_2526b5db-e5cd-4675-8103-a41174841cf2.png","زليج ديال الحمام"],["https://d8j0ntlcm91z4.cloudfront.net/user_38Z6iQ5SZ4Zbbv4qoOMfcP3gcAd/hf_20260814_125207_6fea33a7-4b94-4b06-9724-1d42a08e45dd.png","تركيب كليماتيزور"]];
-folio.innerHTML=FOLIO.map(([s,c])=>`<figure><img src="${s}" alt="${c}" loading="lazy"><figcaption>${c}</figcaption></figure>`).join("");
+const FOLIO=[["@125207_8385ef96-2667-4f5e-ae4e-a67bf57c60ff","تابلو جديد — المعاريف"],["@125207_c8aad9e1-c5d0-42ed-bf4a-322c432fe604","تركيب صانيطير"],
+  ["@125207_96abb335-26af-4e15-868c-7e486ea5de51","بلاكار على المقاس"],["@125207_0f493f3d-5005-4537-97d8-4e9894b37092","تادلاكت ديال السالون"],
+  ["@125207_2526b5db-e5cd-4675-8103-a41174841cf2","زليج ديال الحمام"],["@125207_6fea33a7-4b94-4b06-9724-1d42a08e45dd","تركيب كليماتيزور"]];
+folio.innerHTML=FOLIO.map(([s,c])=>`<figure><img src="${url(s)}" alt="${c}" loading="lazy"><figcaption>${c}</figcaption></figure>`).join("");
 document.getElementById("postBtn").addEventListener("click",()=>toast("فالنسخة الكاملة كتّالع الصورة من التيليفون ديالك 📷"));
 
 buildFilters(); render(); frame();
