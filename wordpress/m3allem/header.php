@@ -15,13 +15,15 @@ defined( 'ABSPATH' ) || exit;
 <body <?php body_class( is_front_page() ? 'locked' : 'entered in-app' ); ?>>
 <?php wp_body_open(); ?>
 
+<div class="grain" aria-hidden="true"></div>
+
 <header>
 	<a class="logo" href="<?php echo esc_url( home_url( '/' ) ); ?>">
 		<i>م</i> <?php bloginfo( 'name' ); ?><span>.</span>
 	</a>
 	<nav>
 		<?php if ( is_front_page() ) : ?>
-			<button class="nb hide-s" data-nav="tour">الجولة</button>
+			<button class="nb hide-s" data-nav="tour">القاعات</button>
 			<button class="nb hide-s" data-nav="choose">دخل</button>
 		<?php endif; ?>
 		<a class="nb" href="<?php echo esc_url( home_url( '/client/' ) ); ?>">كليان</a>

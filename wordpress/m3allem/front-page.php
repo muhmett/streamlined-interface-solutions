@@ -69,15 +69,15 @@ $total = $total ? (int) $total->publish : 0;
 	<section class="hall" id="intro">
 		<div class="bg"><img src="<?php echo esc_url( $hall ); ?>" alt="" loading="lazy"></div>
 		<div class="in">
-			<span class="eyebrow rv">داخل البناية</span>
-			<h2 class="rv d1"><?php echo wp_kses_post( get_theme_mod( 'm3_headline', 'بناية وحدة، <em>وكل طبقة صنعة</em>' ) ); ?></h2>
-			<p class="rv d2"><?php echo esc_html( get_bloginfo( 'description' ) ? get_bloginfo( 'description' ) : 'هنا كتلقى المعلّمية ديال كل حرفة، مرتّبين كل واحد فالزون ديالو. تجول، شوف الخدمة ديالهم، وتواصل معاهم نيشان — بلا وسيط وبلا صداع.' ); ?></p>
+			<span class="eyebrow rv">متحف الصنعة</span>
+			<h2 class="rv d1"><?php echo wp_kses_post( get_theme_mod( 'm3_headline', 'متحف الصنعة المغربية، <em>قاعة بقاعة</em>' ) ); ?></h2>
+			<p class="rv d2"><?php echo esc_html( get_bloginfo( 'description' ) ? get_bloginfo( 'description' ) : 'كل حرفة عندها القاعة ديالها: الخدمة معروضة، والمعلّم واقف فبلاصتو. دخل، تجول، واختار المعلّم لي بغيتي — وعيّط ليه نيشان.' ); ?></p>
 			<div class="cta rv d3">
-				<button class="btn gold" data-nav="z1">كمّل الجولة ↓</button>
+				<button class="btn gold" data-nav="z1">دخل للقاعات ↓</button>
 				<a class="btn ghost" href="<?php echo esc_url( home_url( '/client/' ) ); ?>">قلّب على معلّم</a>
 			</div>
 			<div class="stats rv d4">
-				<div class="stat"><b><?php echo (int) count( $zones ); ?></b><span>زونات ديال الحرف</span></div>
+				<div class="stat"><b><?php echo (int) count( $zones ); ?></b><span>قاعات ديال الصنعة</span></div>
 				<div class="stat"><b><?php echo esc_html( number_format_i18n( $total ) ); ?></b><span>معلّم مسجّل</span></div>
 				<div class="stat"><b><?php echo esc_html( m3allem_site_rating() ); ?></b><span>معدل التقييم</span></div>
 			</div>
@@ -95,10 +95,18 @@ $total = $total ? (int) $total->publish : 0;
 			</div>
 			<div class="weave"></div>
 			<div class="emblem"><?php echo m3allem_emblem( $z['id'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></div>
-			<div class="veil"></div><div class="veil2"></div>
+			<div class="hung rv">
+				<div class="artframe"><div class="canvas" style="--h:<?php echo (int) $z['hue']; ?>">
+					<?php if ( $z['img'] ) : ?>
+						<img src="<?php echo esc_url( $z['img'] ); ?>" alt="<?php echo esc_attr( $z['n'] ); ?>" loading="lazy">
+					<?php else : ?>
+						<span class="mark"><?php echo m3allem_emblem( $z['id'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
+					<?php endif; ?>
+				</div></div>
+			</div>
 			<div class="maalem rv"><?php echo m3allem_figure( $z['id'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></div>
 			<div class="body">
-				<div class="znum rv">زون <?php echo esc_html( str_pad( $i + 1, 2, '0', STR_PAD_LEFT ) ); ?> / <?php echo esc_html( str_pad( count( $zones ), 2, '0', STR_PAD_LEFT ) ); ?></div>
+				<div class="znum rv">قاعة <?php echo esc_html( str_pad( $i + 1, 2, '0', STR_PAD_LEFT ) ); ?> / <?php echo esc_html( str_pad( count( $zones ), 2, '0', STR_PAD_LEFT ) ); ?></div>
 				<h3 class="rv d1"><?php echo esc_html( $z['n'] ); ?></h3>
 				<?php if ( $z['d'] ) : ?>
 					<p class="desc rv d2"><?php echo esc_html( $z['d'] ); ?></p>
@@ -111,12 +119,12 @@ $total = $total ? (int) $total->publish : 0;
 					</div>
 				<?php endif; ?>
 				<div class="zmeta rv d3">
-					<div><b><?php echo (int) $z['pros']; ?></b><span>معلّم فهاد الزون</span></div>
+					<div><b><?php echo (int) $z['pros']; ?></b><span>معلّم فهاد القاعة</span></div>
 					<div><b><?php echo esc_html( $z['rate'] ? $z['rate'] : '—' ); ?></b><span>معدل التقييم</span></div>
 				</div>
 				<div class="go rv d4">
 					<a class="btn gold" href="<?php echo esc_url( add_query_arg( 'hirfa', $z['id'], home_url( '/client/' ) ) ); ?>">
-						شوف المعلّمية ديال هاد الزون ←
+						شوف المعلّمية ديال هاد القاعة ←
 					</a>
 				</div>
 			</div>
@@ -144,9 +152,9 @@ $total = $total ? (int) $total->publish : 0;
 				<a class="role rv d3" href="<?php echo esc_url( home_url( '/pro/' ) ); ?>">
 					<span class="ic">🛠️</span>
 					<h3>أنا معلّم</h3>
-					<p>باغي البلاصة ديالي فالزون ديال الصنعة ديالي، والناس تلقاني.</p>
+					<p>باغي البلاصة ديالي فالقاعة ديال الصنعة ديالي، والناس تلقاني.</p>
 					<ul>
-						<li>سجّل وبان للناس فالزون ديالك</li>
+						<li>سجّل وبان للناس فالقاعة ديالك</li>
 						<li>شوف المشاكل العاجلة القريبة منك</li>
 						<li>بوسطي الخدمة ديالك بحال انسطا</li>
 						<li>شارة «موثّق» من بعد ما تصيفط الكارط</li>

@@ -167,36 +167,41 @@
   var GAP = 520; // px between storeys in 3D space
   var storeys = [];
 
+  function pad(n) {
+    return n < 10 ? "0" + n : String(n);
+  }
+
   if (scene && ZONES.length) {
-    for (var s = 0; s < ZONES.length; s += 2) {
-      var pair = [ZONES[s], ZONES[s + 1]].filter(Boolean);
+    ZONES.forEach(function (z, i) {
+      // One craft per hall. The work hangs on one wall and the carved maâlem
+      // stands on a plinth across from it, so you walk between the two.
+      var wall = i % 2 === 0 ? "r" : "l";
+      var opposite = wall === "r" ? "l" : "r";
       var el = document.createElement("div");
       el.className = "storey";
-      el.style.transform = "translateZ(" + -(storeys.length + 1) * GAP + "px)";
+      el.style.transform = "translateZ(" + -(i + 1) * GAP + "px)";
       el.innerHTML =
         '<div class="frame"></div><div class="sill"></div>' +
-        pair
-          .map(function (z, k) {
-            return (
-              '<a class="bay ' + (k === 0 ? "r" : "l") + '" href="' + z.link +
-              '" style="--h:' + (z.hue != null ? z.hue : 40) + '">' +
-              '<span class="tex"></span>' +
-              (z.img ? '<img src="' + z.img + '" alt="" loading="lazy"><span class="scrim"></span>' : "") +
-              '<span class="art">' + (z.figure || "") + "</span>" +
-              '<span class="lamp"></span>' +
-              '<span class="shade"></span>' +
-              '<span class="tagline"><b>' + z.n + "</b><span>" + z.pros + " معلّم</span></span>" +
-              "</a>"
-            );
-          })
-          .join("");
-      el.dataset.names = pair.map(function (z) { return z.n; }).join(" · ");
-      el.dataset.link = pair[0].link;
+        '<a class="artwall ' + wall + '" href="' + z.link + '">' +
+          '<span class="artframe"><span class="canvas" style="--h:' + (z.hue != null ? z.hue : 40) + '">' +
+            (z.img
+              ? '<img src="' + z.img + '" alt="" loading="lazy">'
+              : '<span class="mark">' + (z.emblem || "") + "</span>") +
+          "</span></span>" +
+          '<span class="cartel"><span class="no">قاعة ' + pad(i + 1) + " / " + pad(ZONES.length) + "</span>" +
+            "<b>" + z.n + "</b><span>" + z.pros + " معلّم</span></span>" +
+        "</a>" +
+        '<div class="plinth ' + opposite + '">' +
+          '<div class="fig">' + (z.figure || "") + "</div>" +
+          '<div class="base"></div>' +
+        "</div>";
+      el.dataset.names = z.n;
+      el.dataset.link = z.link;
       scene.appendChild(el);
       storeys.push(el);
-    }
-    // Enough scroll to fly past every storey.
-    lobby.style.height = 100 + storeys.length * 95 + "svh";
+    });
+    // Enough scroll to walk every hall.
+    lobby.style.height = 100 + storeys.length * 78 + "svh";
   }
 
   var hud = document.getElementById("hud");
@@ -235,7 +240,7 @@
       hud.classList.toggle("show", live >= 0 && box.bottom > window.innerHeight * 0.5);
       if (live !== liveIndex && live >= 0) {
         liveIndex = live;
-        hudLvl.textContent = "الطابق " + (live + 1) + " / " + storeys.length;
+        hudLvl.textContent = "قاعة " + (live + 1) + " / " + storeys.length;
         hudName.textContent = storeys[live].dataset.names;
         hudGo.href = storeys[live].dataset.link;
       }
